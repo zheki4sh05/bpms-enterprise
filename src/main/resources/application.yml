@@ -7,11 +7,12 @@ spring:
         password: _9L#2*6n
     jpa:
         hibernate:
-            ddl-auto: create-drop
+            ddl-auto: update
         properties:
           hibernate:
               format_sql: true
         database: mysql
         database-platform: org.hibernate.dialect.MySQLDialect
         show-sql: true
+
 
