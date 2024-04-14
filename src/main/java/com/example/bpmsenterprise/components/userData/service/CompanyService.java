@@ -2,7 +2,6 @@ package com.example.bpmsenterprise.components.userData.service;
 
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
-import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
 import com.example.bpmsenterprise.components.userData.entity.Company;
 import com.example.bpmsenterprise.components.userData.entity.Role_in_company;
 import com.example.bpmsenterprise.components.userData.entity.User_role_in_company;
@@ -12,15 +11,11 @@ import com.example.bpmsenterprise.components.userData.repository.User_role_in_co
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CompanyService implements ICompanyControl {
+class CompanyService implements ICompanyControl {
     private final UserData userData;
     private final User_role_in_companyRepo userRoleInCompanyRepo;
     private final CompanyRepo companyRepo;
@@ -69,6 +64,16 @@ public class CompanyService implements ICompanyControl {
 
        companyRepo.delete(company);
 
+
+    }
+
+    @Override
+    public void inviteUserToCompany(String userEmail) {
+
+    }
+
+    @Override
+    public void deleteUserFromCompany(String userEmail) {
 
     }
 

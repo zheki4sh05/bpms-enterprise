@@ -8,8 +8,7 @@ import lombok.Setter;
 @Table(name="base_role")
 @Getter
 @Setter
-public class Role_in_company {
-
+public class Role_in_project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

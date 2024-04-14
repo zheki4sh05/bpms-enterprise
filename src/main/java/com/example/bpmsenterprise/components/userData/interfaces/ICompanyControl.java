@@ -6,4 +6,8 @@ public interface ICompanyControl {
     void updateCreatedCompany(String name);
 
     void deleteCreatedCompany(String name);
+
+    void inviteUserToCompany(String userEmail);
+
+    void deleteUserFromCompany(String userEmail);
 }
