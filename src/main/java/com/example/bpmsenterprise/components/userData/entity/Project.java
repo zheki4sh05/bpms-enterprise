@@ -28,4 +28,9 @@ public class Project {
     @Column(name="deadline")
     private LocalDate deadline;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Company company;
+
+
 }

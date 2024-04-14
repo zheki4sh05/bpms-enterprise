@@ -5,4 +5,6 @@ import com.example.bpmsenterprise.components.userData.controllers.project.Projec
 public interface IProjectControl {
 
     void createNewProject(ProjectResponseEntity projectResponseEntity);
+
+    void deleteProject(ProjectResponseEntity projectResponseEntity);
 }

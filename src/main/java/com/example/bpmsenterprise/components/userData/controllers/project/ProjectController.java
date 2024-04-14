@@ -2,6 +2,8 @@ package com.example.bpmsenterprise.components.userData.controllers.project;
 
 import com.example.bpmsenterprise.components.userData.controllers.company.CreateCompanyRequest;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectControl;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +25,22 @@ public class ProjectController {
         try{
             projectControl.createNewProject(projectResponseEntity);
             return ResponseEntity.ok(projectResponseEntity.getName());
-        }catch (DataIntegrityViolationException e){ // если у пользователя уже есть компания
-            return  ResponseEntity.badRequest().header("error", "419").body("already has company");
+        }catch (EntityNotFoundException | NonUniqueResultException e){ //
+            return  ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
+        }
+
+    }
+
+    @DeleteMapping("/delete")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<String> deleteProject(@RequestHeader Map<String, String> headers,
+                                                @RequestBody ProjectResponseEntity projectResponseEntity) {
+
+        try{
+            projectControl.deleteProject(projectResponseEntity);
+            return ResponseEntity.ok(projectResponseEntity.getName());
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
         }
 
     }
