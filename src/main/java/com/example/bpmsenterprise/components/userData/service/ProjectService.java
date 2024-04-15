@@ -3,6 +3,7 @@ package com.example.bpmsenterprise.components.userData.service;
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
 import com.example.bpmsenterprise.components.userData.controllers.project.ProjectResponseEntity;
+import com.example.bpmsenterprise.components.userData.controllers.project.ProjectUpdateResponseEntity;
 import com.example.bpmsenterprise.components.userData.entity.*;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectControl;
 import com.example.bpmsenterprise.components.userData.repository.CompanyRepo;
@@ -43,14 +44,8 @@ class ProjectService implements IProjectControl {
             if(alreadyExist!=null)
                 throw new NonUniqueResultException("already exist");
 
-            Project project = new Project();
-            project.setName(projectResponseEntity.getName());
-            project.setDescription(projectResponseEntity.getDescription());
-            project.setCreated_at( LocalDate.parse(projectResponseEntity.getStartDate(), formatter));
-            project.setDeadline( LocalDate.parse(projectResponseEntity.getFinishDate(), formatter));
+            Project project = projectMapper(projectResponseEntity, company);
 
-
-            project.setCompany(company);
             Project savedProject = projectRepo.save(project);
 
             User_role_in_project userRoleInProject = new User_role_in_project();
@@ -78,6 +73,29 @@ class ProjectService implements IProjectControl {
         User_role_in_project userRoleInProject = userRoleInProjectRepo.findByNameAndWhereUserAdmin(projectResponseEntity.getName(), user.getId()).orElseThrow(EntityNotFoundException::new);
 
         projectRepo.delete(userRoleInProject.getProject());
+    }
+
+    @Override
+    public void updateProject(ProjectUpdateResponseEntity projectResponseEntity) {
+        User user = userData.getUserByEmail(userData.getCurrentUserEmail());
+        User_role_in_company userRoleInCompany = userRoleInCompanyRepo.findByUserIdAndWhereUserAdmin(user.getId());
+        Company company = userRoleInCompany.getDepartment();
+        User_role_in_project userRoleInProject = userRoleInProjectRepo.findByNameAndWhereUserAdmin(projectResponseEntity.getOldName(), user.getId()).orElseThrow(EntityNotFoundException::new);
+        Project oldProject = userRoleInProject.getProject();
+        Project updatedProject =  projectMapper(projectResponseEntity,company);
+        updatedProject.setId(oldProject.getId());
+        projectRepo.save(updatedProject);
+
+    }
+    private Project projectMapper(ProjectResponseEntity projectResponseEntity, Company company){
+        Project project = new Project();
+        project.setCompany(company);
+        project.setName(projectResponseEntity.getName());
+        project.setDescription(projectResponseEntity.getDescription());
+        project.setCreated_at(LocalDate.parse(projectResponseEntity.getStartDate(),formatter));
+        project.setDeadline(LocalDate.parse(projectResponseEntity.getFinishDate(),formatter));
+
+        return project;
     }
 
 

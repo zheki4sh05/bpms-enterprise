@@ -1,11 +1,9 @@
 package com.example.bpmsenterprise.components.userData.controllers.project;
 
-import com.example.bpmsenterprise.components.userData.controllers.company.CreateCompanyRequest;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectControl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +39,19 @@ public class ProjectController {
             return ResponseEntity.ok(projectResponseEntity.getName());
         }catch (EntityNotFoundException e){
             return ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
+        }
+
+    }
+    @PutMapping ("/update")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<String> updateProject(@RequestHeader Map<String, String> headers,
+                                                    @RequestBody ProjectUpdateResponseEntity projectUpdateResponseEntity) {
+
+        try{
+            projectControl.updateProject(projectUpdateResponseEntity);
+            return ResponseEntity.ok(projectUpdateResponseEntity.getName());
+        }catch (EntityNotFoundException e){
+            return  ResponseEntity.badRequest().header("error", "404").body("doesn't have a project");
         }
 
     }

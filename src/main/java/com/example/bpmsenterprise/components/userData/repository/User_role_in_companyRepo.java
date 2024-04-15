@@ -22,4 +22,10 @@ public interface User_role_in_companyRepo extends JpaRepository<User_role_in_com
       where u.user.id = :idUser and u.role_in_company.id = 1 and u.department.id = :idComp   
       """)
     Optional<User_role_in_company> findByUserIdAndCompanyIdAndWhereUserAdmin(@Param("idUser") Integer idUser, @Param("idComp") Integer idComp) throws EntityNotFoundException;
+
+    @Query(value= """
+    select u from User_role_in_company u
+    where u.user.email = :e
+""")
+    User_role_in_company findFreeUserByEmail(@Param("e") String email);
 }
