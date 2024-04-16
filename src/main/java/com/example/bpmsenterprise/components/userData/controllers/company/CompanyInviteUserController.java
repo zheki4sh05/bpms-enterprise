@@ -1,12 +1,10 @@
-package com.example.bpmsenterprise.components.userData.controllers.user;
+package com.example.bpmsenterprise.components.userData.controllers.company;
 
-import com.example.bpmsenterprise.components.userData.controllers.project.ProjectResponseEntity;
+import com.example.bpmsenterprise.components.userData.controllers.user.AcceptInvitationEntity;
+import com.example.bpmsenterprise.components.userData.controllers.user.UserInviteResponseEntity;
 import com.example.bpmsenterprise.components.userData.exceptions.UserWorksInCompanyException;
-import com.example.bpmsenterprise.components.userData.interfaces.ICompanyControl;
 import com.example.bpmsenterprise.components.userData.interfaces.ICompanyHRControl;
-import com.example.bpmsenterprise.components.userData.interfaces.IProjectControl;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,18 +18,19 @@ import java.util.Map;
 public class CompanyInviteUserController {
 
     private final ICompanyHRControl companyHRControl;
+
     @PostMapping("/invite")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<String> inviteUserByEmail(@RequestHeader Map<String, String> headers,
-                                                @RequestBody UserInviteResponseEntity userInviteResponseEntity) {
+                                                    @RequestBody UserInviteResponseEntity userInviteResponseEntity) {
 
-        try{
+        try {
             companyHRControl.invite(userInviteResponseEntity);
             return ResponseEntity.ok(userInviteResponseEntity.getEmail());
-        }catch (EntityNotFoundException e){ //
-            return  ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
-        }catch (UserWorksInCompanyException e){
-            return  ResponseEntity.badRequest().header("error", String.valueOf(e.getCode())).body(e.getMessage());
+        } catch (EntityNotFoundException e) { //
+            return ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
+        } catch (UserWorksInCompanyException e) {
+            return ResponseEntity.badRequest().header("error", String.valueOf(e.getCode())).body(e.getMessage());
         }
     }
 
@@ -39,13 +38,13 @@ public class CompanyInviteUserController {
     @PostMapping("/accept_invitation")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<String> accept(@RequestHeader Map<String, String> headers,
-                                                    @RequestBody AcceptInvitationEntity acceptInvitationEntity) {
+                                         @RequestBody AcceptInvitationEntity acceptInvitationEntity) {
 
-        try{
+        try {
             companyHRControl.acceptInvitation(acceptInvitationEntity);
             return ResponseEntity.ok(String.valueOf(acceptInvitationEntity.getId()));
-        }catch (EntityNotFoundException e){ //
-            return  ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
+        } catch (EntityNotFoundException e) { //
+            return ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
         }
     }
 
