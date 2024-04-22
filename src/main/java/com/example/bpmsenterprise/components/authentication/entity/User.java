@@ -31,17 +31,24 @@ public class User implements UserDetails {
     @Column(name="lastname")
     private String lastname;
 
-    @Column(name="birth_day")
+    @Column(name = "birth_day")
     private String birth_day;
 
-    @Column(name="password")
+    @Column(name = "password")
     private String password;
 
-    @Column(name="email")
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "surname")
+    private String surname;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

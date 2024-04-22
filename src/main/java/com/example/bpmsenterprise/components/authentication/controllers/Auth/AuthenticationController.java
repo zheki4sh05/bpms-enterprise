@@ -4,10 +4,11 @@ import com.example.bpmsenterprise.components.authentication.services.Authenticat
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+
 //@CrossOrigin(origins = "http://localhost:8080")
 public class AuthenticationController {
     private final AuthenticationService service;

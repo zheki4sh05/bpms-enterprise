@@ -1,7 +1,7 @@
 package com.example.bpmsenterprise.components.userData.controllers.company;
 
-import com.example.bpmsenterprise.components.userData.controllers.user.AcceptInvitationEntity;
-import com.example.bpmsenterprise.components.userData.controllers.user.UserInviteResponseEntity;
+import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.AcceptInvitationEntity;
+import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.UserInviteResponseEntity;
 import com.example.bpmsenterprise.components.userData.exceptions.UserWorksInCompanyException;
 import com.example.bpmsenterprise.components.userData.interfaces.ICompanyHRControl;
 import jakarta.persistence.EntityNotFoundException;

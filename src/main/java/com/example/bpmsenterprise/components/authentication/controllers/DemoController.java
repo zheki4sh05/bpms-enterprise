@@ -17,9 +17,6 @@ public class DemoController {
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<String> sayHello(@RequestHeader Map<String, String> headers){
 
-
-        System.out.println("HEllow!");
-
-        return ResponseEntity.ok("Hellow from controller");
+        return ResponseEntity.ok("Hello world!");
     }
 }
