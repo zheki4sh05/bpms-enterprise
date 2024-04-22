@@ -2,6 +2,7 @@ package com.example.bpmsenterprise.components.userData.service;
 
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
+import com.example.bpmsenterprise.components.userData.DTO.UserCompany;
 import com.example.bpmsenterprise.components.userData.entity.Company;
 import com.example.bpmsenterprise.components.userData.entity.Role_in_company;
 import com.example.bpmsenterprise.components.userData.entity.User_role_in_company;
@@ -68,12 +69,19 @@ class CompanyService implements ICompanyControl {
     }
 
     @Override
-    public void inviteUserToCompany(String userEmail) {
-
+    public Company companyData(String name) {
+        return companyRepo.findBy(name).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
-    public void deleteUserFromCompany(String userEmail) {
+    public UserCompany getUserCompany() {
+        User user = userData.getUserByEmail(userData.getCurrentUserEmail());
+        User_role_in_company userRoleInCompany = userRoleInCompanyRepo.findByUserId(user.getId()).orElseThrow(EntityNotFoundException::new);
+        UserCompany userCompany = new UserCompany();
+        userCompany.setName(userRoleInCompany.getDepartment().getName());
+        userCompany.setDesc(userRoleInCompany.getDepartment().getDesc());
+        userCompany.setRole(userRoleInCompany.getRole_in_company().getName());
+        return userCompany;
 
     }
 

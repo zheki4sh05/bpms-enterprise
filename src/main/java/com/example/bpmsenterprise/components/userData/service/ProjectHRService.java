@@ -2,13 +2,10 @@ package com.example.bpmsenterprise.components.userData.service;
 
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
-import com.example.bpmsenterprise.components.userData.controllers.user.ProjectAddUserEntity;
-import com.example.bpmsenterprise.components.userData.controllers.user.UserInviteResponseEntity;
-import com.example.bpmsenterprise.components.userData.entity.Project;
+import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.ProjectAddUserEntity;
 import com.example.bpmsenterprise.components.userData.entity.Role_in_project;
 import com.example.bpmsenterprise.components.userData.entity.User_role_in_company;
 import com.example.bpmsenterprise.components.userData.entity.User_role_in_project;
-import com.example.bpmsenterprise.components.userData.interfaces.ICompanyHRControl;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectHRControl;
 import com.example.bpmsenterprise.components.userData.repository.User_role_in_companyRepo;
 import com.example.bpmsenterprise.components.userData.repository.User_role_in_projectRepo;
@@ -44,9 +41,8 @@ public class ProjectHRService implements IProjectHRControl {
 
                 userRoleInProjectRepo.save(userRoleInProject);
             }
-            ;
+
         }
-        ;
 
 
     }

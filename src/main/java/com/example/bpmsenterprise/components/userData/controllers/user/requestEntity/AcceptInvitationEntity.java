@@ -1,4 +1,4 @@
-package com.example.bpmsenterprise.components.userData.controllers.user;
+package com.example.bpmsenterprise.components.userData.controllers.user.requestEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

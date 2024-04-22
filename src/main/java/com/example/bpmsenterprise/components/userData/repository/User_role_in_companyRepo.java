@@ -36,4 +36,12 @@ public interface User_role_in_companyRepo extends JpaRepository<User_role_in_com
                 
             """)
     User_role_in_company findByUserEmailAndUserIsParticipant(@Param("userEmail") String userEmail, @Param("companyName") String companyName);
+
+    @Query(
+            value = """
+                                select u from User_role_in_company u 
+                                where u.user.id = :userId
+                    """
+    )
+    Optional<User_role_in_company> findByUserId(@Param("userId") Integer id);
 }

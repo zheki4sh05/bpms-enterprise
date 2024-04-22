@@ -7,15 +7,18 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name="department")
+@Table(name = "department")
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id")
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "desc")
+    private String desc;
 
 
 }

@@ -1,7 +1,6 @@
 package com.example.bpmsenterprise.components.userData.controllers.user;
 
-import com.example.bpmsenterprise.components.userData.exceptions.UserWorksInCompanyException;
-import com.example.bpmsenterprise.components.userData.interfaces.IProjectControl;
+import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.ProjectAddUserEntity;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectHRControl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

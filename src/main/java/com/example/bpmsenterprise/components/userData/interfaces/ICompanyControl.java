@@ -1,5 +1,8 @@
 package com.example.bpmsenterprise.components.userData.interfaces;
 
+import com.example.bpmsenterprise.components.userData.DTO.UserCompany;
+import com.example.bpmsenterprise.components.userData.entity.Company;
+
 public interface ICompanyControl {
     void createNewCompany(String name);
 
@@ -7,7 +10,7 @@ public interface ICompanyControl {
 
     void deleteCreatedCompany(String name);
 
-    void inviteUserToCompany(String userEmail);
+    Company companyData(String name);
 
-    void deleteUserFromCompany(String userEmail);
+    UserCompany getUserCompany();
 }
