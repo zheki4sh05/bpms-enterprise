@@ -68,12 +68,12 @@ public class CompanyController {
 
     @GetMapping("/")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
-    public ResponseEntity<String> getCompanyData(@RequestHeader Map<String, String> headers,
-                                                 @RequestBody CreateCompanyRequest createCompanyRequest) {
+    public ResponseEntity<?> getCompanyData(@RequestHeader Map<String, String> headers,
+                                            @RequestBody CreateCompanyRequest createCompanyRequest) {
 
         try {
             Company company = companyControl.companyData(createCompanyRequest.getName());
-            return ResponseEntity.ok(company.toString());
+            return new ResponseEntity<>(company, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().header("error", "404").body("doesn't have a company");
         }
@@ -82,7 +82,7 @@ public class CompanyController {
 
     @GetMapping("/userCompany")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
-    public ResponseEntity<?> getCompanyData(@RequestHeader Map<String, String> headers) {
+    public ResponseEntity<?> getUserCompanyData(@RequestHeader Map<String, String> headers) {
         try {
             UserCompany userCompany = companyControl.getUserCompany();
             return new ResponseEntity<>(userCompany, HttpStatus.OK);
