@@ -91,6 +91,7 @@ public class AuthenticationService implements UserData {
 
     @Override
     public String getCurrentUserEmail() {
+
         return customSecurityExpression.getPrincipal().getEmail();
     }
 

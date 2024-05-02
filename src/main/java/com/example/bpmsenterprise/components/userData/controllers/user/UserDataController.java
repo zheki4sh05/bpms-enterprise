@@ -24,7 +24,6 @@ public class UserDataController {
     @GetMapping("/")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> getUserData(@RequestHeader Map<String, String> headers) {
-
         try {
             UserDTO user = userDataControl.fetch();
             return new ResponseEntity<>(user, HttpStatus.OK);
@@ -32,8 +31,6 @@ public class UserDataController {
             return new ResponseEntity<>(new EntityNotFoundException(String.valueOf(HttpStatus.NOT_FOUND.value()), e),
                     HttpStatus.NOT_FOUND);
         }
-
-
     }
 
     @CrossOrigin
@@ -44,7 +41,7 @@ public class UserDataController {
 
         try {
             userDataControl.update(userDTO);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(new EntityNotFoundException(String.valueOf(HttpStatus.NOT_FOUND.value()), e),
                     HttpStatus.NOT_FOUND);

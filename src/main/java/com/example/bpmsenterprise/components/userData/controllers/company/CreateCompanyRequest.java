@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 public class CreateCompanyRequest {
     private String name;
+    private String desc;
 
 
 }

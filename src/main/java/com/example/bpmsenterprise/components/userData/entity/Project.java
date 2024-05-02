@@ -13,19 +13,22 @@ import java.time.LocalDate;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name="description")
+    @Column(name = "description")
     private String description;
 
-    @Column(name="created_at")
+    @Column(name = "color")
+    private String color;
+
+    @Column(name = "created_at")
     private LocalDate created_at;
 
-    @Column(name="deadline")
+    @Column(name = "deadline")
     private LocalDate deadline;
 
     @ManyToOne

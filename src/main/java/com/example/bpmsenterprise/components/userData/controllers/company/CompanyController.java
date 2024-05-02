@@ -29,8 +29,8 @@ public class CompanyController {
                                                 @RequestBody CreateCompanyRequest createCompanyRequest) {
 
         try{
-            companyControl.createNewCompany(createCompanyRequest.getName());
-            return ResponseEntity.ok(createCompanyRequest.getName());
+            Company createdCompany = companyControl.createNewCompany(createCompanyRequest.getName());
+            return ResponseEntity.ok(createdCompany.getName());
         }catch (DataIntegrityViolationException e){ // если у пользователя уже есть компания
             return  ResponseEntity.badRequest().header("error", "419").body("already has company");
         }
@@ -40,14 +40,14 @@ public class CompanyController {
     @CrossOrigin
     @PutMapping("/update")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
-    public ResponseEntity<String> updateCompanyName(@RequestHeader Map<String, String> headers,
-                                                    @RequestBody CreateCompanyRequest createCompanyRequest) {
+    public ResponseEntity<?> updateCompanyName(@RequestHeader Map<String, String> headers,
+                                               @RequestBody CreateCompanyRequest createCompanyRequest) {
 
-        try{
-            companyControl.updateCreatedCompany(createCompanyRequest.getName());
-            return ResponseEntity.ok(createCompanyRequest.getName());
-        }catch (EntityNotFoundException e){ // если у пользователя уже есть компания
-            return  ResponseEntity.badRequest().header("error", "404").body("doesn't have a company");
+        try { // доделать возврат обновленных данных на клиент
+            Company company = companyControl.updateCreatedCompany(createCompanyRequest);
+            return new ResponseEntity<>(company, HttpStatus.OK);
+        } catch (EntityNotFoundException e) { // если у пользователя уже есть компания
+            return ResponseEntity.badRequest().header("error", "404").body("doesn't have a company");
         }
 
     }

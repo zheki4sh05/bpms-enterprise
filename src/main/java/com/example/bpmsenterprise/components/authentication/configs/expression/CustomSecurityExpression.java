@@ -2,7 +2,6 @@ package com.example.bpmsenterprise.components.authentication.configs.expression;
 
 import com.example.bpmsenterprise.components.authentication.configs.JwtService;
 import com.example.bpmsenterprise.components.authentication.entity.User;
-import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +19,11 @@ public class CustomSecurityExpression {
 
         User user = getPrincipal();
 
-        return getUserEmail(headers).equals(user.getEmail());
+        Boolean isAccessed = getUserEmail(headers).equals(user.getEmail());
+
+        System.out.println("isAccessed " + isAccessed);
+
+        return isAccessed;
     }
     public User getPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext()
