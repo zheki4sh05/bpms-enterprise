@@ -1,67 +1,29 @@
 package com.example.bpmsenterprise.components.userData.entity.views;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Data
 public class ViewProject {
+
+    private Integer id;
     private String name;
-    private String done;
-    private String finish;
-    private String workers;
+    private String description;
+    private LocalDate createdAt;
+    private LocalDate deadline;
     private String role;
-    private String access;
+    private String color;
 
-    public ViewProject(String name, String done, String finish, String workers, String role, String access) {
+    public ViewProject(Integer id, String name, String description, LocalDate createdAt, LocalDate deadline, String role, String color) {
+        this.id = id;
         this.name = name;
-        this.done = done;
-        this.finish = finish;
-        this.workers = workers;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.deadline = deadline;
         this.role = role;
-        this.access = access;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDone() {
-        return done;
-    }
-
-    public void setDone(String done) {
-        this.done = done;
-    }
-
-    public String getFinish() {
-        return finish;
-    }
-
-    public void setFinish(String finish) {
-        this.finish = finish;
-    }
-
-    public String getWorkers() {
-        return workers;
-    }
-
-    public void setWorkers(String workers) {
-        this.workers = workers;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getAccess() {
-        return access;
-    }
-
-    public void setAccess(String access) {
-        this.access = access;
+        this.color = color;
     }
 }

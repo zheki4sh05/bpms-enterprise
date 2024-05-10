@@ -19,4 +19,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             """)
     List<ViewUserAsWorker> findAllByDepartmentId(@Param("companyId") Integer id);
 
+    @Query(value = """
+                select new com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker(w.firstname, w.lastname, w.email)
+                from User w
+                join User_role_in_project urp on urp.project.id = :projectId and urp.user.id = w.id
+            """)
+    Optional<List<ViewUserAsWorker>> findAllByProjectId(@Param("projectId") Integer projectId);
 }

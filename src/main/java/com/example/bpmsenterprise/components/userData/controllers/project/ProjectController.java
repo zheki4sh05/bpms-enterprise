@@ -1,9 +1,11 @@
 package com.example.bpmsenterprise.components.userData.controllers.project;
 
 import com.example.bpmsenterprise.components.userData.DTO.CreateProject.CreateProjectDTO;
+import com.example.bpmsenterprise.components.userData.DTO.ProjectStatusDTO;
 import com.example.bpmsenterprise.components.userData.DTO.UserCompany;
 import com.example.bpmsenterprise.components.userData.entity.Project;
 import com.example.bpmsenterprise.components.userData.entity.views.ViewProject;
+import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectControl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NonUniqueResultException;
@@ -24,14 +26,14 @@ public class ProjectController {
 
     @PostMapping("/create")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
-    public ResponseEntity<String> createProject(@RequestHeader Map<String, String> headers,
-                                                @RequestBody CreateProjectDTO createProjectDTO) {
+    public ResponseEntity<?> createProject(@RequestHeader Map<String, String> headers,
+                                           @RequestBody CreateProjectDTO createProjectDTO) {
 
         try {
             projectControl.createNewProject(createProjectDTO);
-            return ResponseEntity.ok(createProjectDTO.getAboutProject().getName());
-        } catch (EntityNotFoundException | NonUniqueResultException e) { //
-            return ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
+            return new ResponseEntity<>(createProjectDTO, HttpStatus.OK);
+        } catch (EntityNotFoundException e) { //
+            return ResponseEntity.badRequest().header("error", "404").body(e.getMessage());
         }
 
     }
@@ -66,7 +68,7 @@ public class ProjectController {
     @GetMapping("/fetch")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> getUserProjects(@RequestHeader Map<String, String> headers,
-                                             @RequestParam String companyName) {
+                                             @RequestParam(value = "companyName") String companyName) {
 
         try {
             List<ViewProject> projects = projectControl.getAllProjects(companyName);
@@ -77,4 +79,60 @@ public class ProjectController {
 
     }
 
+    @CrossOrigin
+    @GetMapping("/workers")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> getProjectWorkers(@RequestHeader Map<String, String> headers,
+                                               @RequestParam(value = "projectId") Integer projectId) {
+
+        try {
+            List<ViewUserAsWorker> projects = projectControl.getAllWorkers(projectId);
+            return new ResponseEntity<>(projects, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().header("error", "404").body("doesn't have a project");
+        }
+
+    }
+
+    @CrossOrigin
+    @GetMapping("/status")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> isProjectDone(@RequestHeader Map<String, String> headers,
+                                           @RequestParam(value = "projectId") Integer projectId) {
+        try {
+            Double status = projectControl.projectsResult(projectId);
+            return new ResponseEntity<>(status, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().header("error", "404").body("doesn't have a project");
+        }
+
+    }
+
+    @CrossOrigin
+    @GetMapping("/overdue")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> isProjectOverdue(@RequestHeader Map<String, String> headers,
+                                              @RequestParam(value = "projectId") Integer projectId) {
+        try {
+            Integer status = projectControl.projectsOverdue(projectId);
+            return new ResponseEntity<>(status, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().header("error", "404").body("doesn't have a project");
+        }
+
+    }
+
+    @CrossOrigin
+    @GetMapping("/statuses")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> getProjectsStatuses(@RequestHeader Map<String, String> headers,
+                                                 @RequestParam(value = "companyName") String companyName) {
+        try {
+            List<ProjectStatusDTO> list = projectControl.getProjectsStatuses(companyName);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().header("error", "404").body("doesn't have a project");
+        }
+
+    }
 }
