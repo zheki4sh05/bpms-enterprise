@@ -3,7 +3,7 @@ package com.example.bpmsenterprise.components.userData.service;
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
 import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
-import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.AcceptInvitationEntity;
+import com.example.bpmsenterprise.components.userData.DTO.UserDTO;
 import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.UserInviteResponseEntity;
 import com.example.bpmsenterprise.components.userData.entity.Company;
 import com.example.bpmsenterprise.components.userData.entity.Invitation;
@@ -17,6 +17,8 @@ import com.example.bpmsenterprise.components.userData.repository.User_role_in_co
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +37,16 @@ public class CompanyHRService implements ICompanyHRControl {
 
             User invitedUser = userRepository.findByEmail(userInviteResponseEntity.getEmail()).orElseThrow(EntityNotFoundException::new);
 
-            if(userRoleInCompanyRepo.findFreeUserByEmail(invitedUser.getEmail())==null){
+            if (userRoleInCompanyRepo.findFreeUserByEmail(invitedUser.getEmail()) == null) {
                 //создать приглашение
 
                 Invitation invitation = new Invitation();
                 invitation.setCompany(companyRepo.findBy(userInviteResponseEntity.getCompanyName()).orElseThrow());
                 invitation.setUser(invitedUser);
-
+                invitation.setMessage(userInviteResponseEntity.getMessage());
+                invitation.setDate(LocalDate.now());
                 invitationsRepo.save(invitation);
+
 
             }else{
                 throw new UserWorksInCompanyException("Users works in another company", 404);
@@ -54,10 +58,10 @@ public class CompanyHRService implements ICompanyHRControl {
     }
 
     @Override
-    public void acceptInvitation(AcceptInvitationEntity acceptInvitationEntity) {
+    public void acceptInvitation(Integer id) {
         User user = userData.getUserByEmail(userData.getCurrentUserEmail());
 
-        Invitation invitation = invitationsRepo.findById(acceptInvitationEntity.getId()).orElseThrow(EntityNotFoundException::new);
+        Invitation invitation = invitationsRepo.findById(id).orElseThrow(EntityNotFoundException::new);
 
         Company company = companyRepo.findById(invitation.getCompany().getId()).orElseThrow(EntityNotFoundException::new);
 
@@ -75,5 +79,22 @@ public class CompanyHRService implements ICompanyHRControl {
 
         invitationsRepo.delete(invitation);
 
+    }
+
+    @Override
+    public UserDTO findUser(String userEmail) {
+
+        User user = userRepository.findByEmail(userEmail).orElseThrow(EntityNotFoundException::new);
+
+        UserDTO userDTO = new UserDTO();
+
+        userDTO.setFirstname(user.getFirstname());
+        userDTO.setLastname(user.getLastname());
+        userDTO.setSurname(user.getSurname());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setPhone(user.getPhone());
+        userDTO.setBirth_day(user.getBirth_day());
+
+        return userDTO;
     }
 }

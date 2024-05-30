@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     @Query(value = """
-                select new com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker(u.firstname, u.lastname, u.email)
+                select new com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker(u.id ,u.firstname,r.role_in_company.name, u.lastname, u.email)
                 from  User u
                 join User_role_in_company r on r.user.id = u.id and r.department.id= :companyId
             """)

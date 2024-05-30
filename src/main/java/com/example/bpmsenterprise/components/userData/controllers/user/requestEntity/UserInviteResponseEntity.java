@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class UserInviteResponseEntity {
     private String email;
     private String companyName;
+    private String message;
 }

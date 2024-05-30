@@ -1,22 +1,31 @@
 package com.example.bpmsenterprise.components.userData.service;
 
+import com.example.bpmsenterprise.components.assignment.repository.AssignmentNotifRepo;
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
 import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
 
+import com.example.bpmsenterprise.components.userData.DTO.NotificationDTO;
 import com.example.bpmsenterprise.components.userData.DTO.UserDTO;
 import com.example.bpmsenterprise.components.userData.exceptions.SuchEmailIsExistException;
 import com.example.bpmsenterprise.components.userData.interfaces.IUserDataControl;
+import com.example.bpmsenterprise.components.userData.repository.InvitationsRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class UserDataService implements IUserDataControl {
     private final UserData userData;
     private final UserRepository userRepository;
+    private final InvitationsRepo invitationsRepo;
+    private final AssignmentNotifRepo assignmentNotifRepo;
 
     @Override
     public UserDTO fetch() {
@@ -49,5 +58,13 @@ public class UserDataService implements IUserDataControl {
         user.setPhone(userDTO.getPhone());
 
         userRepository.save(user);
+    }
+
+    @Override
+    public List<NotificationDTO> getNotifByEmail(String email) {
+        List<NotificationDTO> invitations = invitationsRepo.findByUserEmail(email);
+        List<NotificationDTO> assignments = assignmentNotifRepo.findAllBySendToEmail(email);
+
+        return Stream.concat(invitations.stream(), assignments.stream()).collect(Collectors.toList());
     }
 }

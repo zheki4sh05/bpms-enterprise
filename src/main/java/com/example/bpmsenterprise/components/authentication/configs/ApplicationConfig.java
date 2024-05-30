@@ -1,6 +1,8 @@
 package com.example.bpmsenterprise.components.authentication.configs;
 
 import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
+import io.minio.MinioClient;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +15,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
+import com.example.bpmsenterprise.components.documents.props.MinioProperties;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class ApplicationConfig {
 
     private final UserRepository repository;
+    private final MinioProperties minioProperties;
 
     @Bean
     public UserDetailsService userDetailsService(){
@@ -40,6 +43,7 @@ public class ApplicationConfig {
 
         return authenticationProvider;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -48,6 +52,16 @@ public class ApplicationConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public MinioClient minioClient() {
+
+        return MinioClient.builder()
+                .endpoint(minioProperties.getUrl())
+                .credentials(minioProperties.getAccessKey(),
+                        minioProperties.getSecretKey())
+                .build();
     }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,48 +24,39 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProjectController {
     private final IProjectControl projectControl;
-
     @PostMapping("/create")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> createProject(@RequestHeader Map<String, String> headers,
                                            @RequestBody CreateProjectDTO createProjectDTO) {
-
         try {
-            projectControl.createNewProject(createProjectDTO);
-            return new ResponseEntity<>(createProjectDTO, HttpStatus.OK);
+            Integer id = projectControl.createNewProject(createProjectDTO);
+            return new ResponseEntity<>(id, HttpStatus.OK);
         } catch (EntityNotFoundException e) { //
             return ResponseEntity.badRequest().header("error", "404").body(e.getMessage());
         }
-
     }
-
     @DeleteMapping("/delete")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<String> deleteProject(@RequestHeader Map<String, String> headers,
                                                 @RequestBody ProjectResponseEntity projectResponseEntity) {
-
         try{
             projectControl.deleteProject(projectResponseEntity);
             return ResponseEntity.ok(projectResponseEntity.getName());
         }catch (EntityNotFoundException e){
             return ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
         }
-
     }
     @PutMapping ("/update")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<String> updateProject(@RequestHeader Map<String, String> headers,
                                                 @RequestBody ProjectUpdateResponseEntity projectUpdateResponseEntity) {
-
         try {
             projectControl.updateProject(projectUpdateResponseEntity);
             return ResponseEntity.ok(projectUpdateResponseEntity.getName());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().header("error", "404").body("doesn't have a project");
         }
-
     }
-
     @GetMapping("/fetch")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> getUserProjects(@RequestHeader Map<String, String> headers,
@@ -78,7 +70,6 @@ public class ProjectController {
         }
 
     }
-
     @CrossOrigin
     @GetMapping("/workers")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
@@ -129,6 +120,7 @@ public class ProjectController {
                                                  @RequestParam(value = "companyName") String companyName) {
         try {
             List<ProjectStatusDTO> list = projectControl.getProjectsStatuses(companyName);
+
             return new ResponseEntity<>(list, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().header("error", "404").body("doesn't have a project");

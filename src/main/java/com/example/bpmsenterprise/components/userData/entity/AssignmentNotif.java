@@ -7,30 +7,33 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Setter
-@Table(name = "department")
+@Table(name = "assignment_notif")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Company {
+public class AssignmentNotif {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "message")
+    private String message;
 
-    @Column(name = "description")
-    private String desc;
-
-    @ManyToOne
-    @JoinColumn(name = "send_from")
-    private User sendFrom;
+    @Column(name = "date")
+    private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name = "send_to")
-    private User sendTo;
+    @JoinColumn(name = "user_from")
+    private User userFrom;
+
+    @ManyToOne
+    @JoinColumn(name = "user_to")
+    private User userTo;
+
 
 }

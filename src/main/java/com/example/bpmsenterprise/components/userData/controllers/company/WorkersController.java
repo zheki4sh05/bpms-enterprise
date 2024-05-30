@@ -3,6 +3,7 @@ package com.example.bpmsenterprise.components.userData.controllers.company;
 import com.example.bpmsenterprise.components.userData.DTO.UserCompany;
 import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker;
 import com.example.bpmsenterprise.components.userData.interfaces.ICompanyControl;
+import com.example.bpmsenterprise.components.userData.interfaces.IUserActivityControl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class WorkersController {
 
     private final ICompanyControl companyControl;
+    private final IUserActivityControl userActivityControl;
 
     @CrossOrigin
     @GetMapping("/list")
@@ -29,11 +31,32 @@ public class WorkersController {
 
         try {
             List<ViewUserAsWorker> workers = companyControl.getWorkers(companyName);
-            workers.forEach(w -> System.out.println("name " + w.getFirstname()));
+
             return new ResponseEntity<>(workers, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().header("error", "404").body("doesn't have a company");
         }
 
     }
+
+    @CrossOrigin
+    @GetMapping("/relevant")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> getRelevantWorkers(@RequestHeader Map<String, String> headers,
+                                                @RequestParam(value = "projectName") String projectName,
+                                                @RequestParam(value = "start") String startDate,
+                                                @RequestParam(value = "deadline") String deadline,
+                                                @RequestParam(value = "specialization") String specialization
+    ) {
+
+        try {
+            List<ViewUserAsWorker> workers = userActivityControl.getRelevantFor(projectName, startDate, deadline, specialization);
+
+            return new ResponseEntity<>(workers, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest().header("error", "404").body("doesn't have a company");
+        }
+
+    }
+
 }

@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface IProjectControl {
 
-    void createNewProject(CreateProjectDTO projectResponseEntity);
+    Integer createNewProject(CreateProjectDTO projectResponseEntity);
 
     void deleteProject(ProjectResponseEntity projectResponseEntity);
 
@@ -29,4 +29,6 @@ public interface IProjectControl {
     Integer projectsOverdue(Integer projectId);
 
     List<ProjectStatusDTO> getProjectsStatuses(String companyName);
+
+    Integer isProjectActive(Integer id);
 }

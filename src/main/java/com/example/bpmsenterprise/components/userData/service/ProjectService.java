@@ -37,8 +37,8 @@ class ProjectService implements IProjectControl {
     private final User_role_in_projectRepo userRoleInProjectRepo;
 
     @Override
-    public void createNewProject(CreateProjectDTO projectResponseEntity) {
-
+    public Integer createNewProject(CreateProjectDTO projectResponseEntity) {
+        Integer id;
         User user = userData.getUserByEmail(userData.getCurrentUserEmail());
         User_role_in_company userRoleInCompany = userRoleInCompanyRepo.findByUserIdAndWhereUserAdmin(user.getId());
         Company company = companyRepo.findById(userRoleInCompany.getDepartment().getId()).orElseThrow(EntityNotFoundException::new);
@@ -52,6 +52,14 @@ class ProjectService implements IProjectControl {
 //---сохраняем сущность проекта
             Project project = projectMapper(projectResponseEntity, company);
             Project savedProject = projectRepo.save(project);
+            id = savedProject.getId();
+//            viewProject.setId(savedProject.getId());
+//            viewProject.setName(savedProject.getName());
+//            viewProject.setDescription(savedProject.getDescription());
+//            viewProject.setColor(savedProject.getColor());
+//            viewProject.setCreatedAt(savedProject.getCreated_at());
+//            viewProject.setDeadline(savedProject.getDeadline());
+//            viewProject.setRole("Управляющий");
 //---------------
             //---Назначаем роли пользователям (добавляем в проект)
             projectResponseEntity.getLeader().forEach(l -> {
@@ -80,6 +88,7 @@ class ProjectService implements IProjectControl {
         }else{
             throw new EntityNotFoundException("you are not admin");
         }
+        return id;
     }
 
     @Override
@@ -144,7 +153,7 @@ class ProjectService implements IProjectControl {
         List<ProjectStatusDTO> list = projectRepo.findByDepartmentNameAndUserId(user.getId(), companyName).orElseThrow(EntityNotFoundException::new);
 
         for (ProjectStatusDTO item : list) {
-            item.setDone(projectRepo.countResultById(item.getId()).orElseThrow(EntityNotFoundException::new));
+            item.setDone(projectRepo.countResultById(item.getId()).orElse(0.));
             item.setIsOverdue(projectRepo.isOverdue(item.getId()));
             item.setWorkers(getAllWorkers(item.getId()));
             item.setIsActive(isProjectActive(item.getId()));
@@ -153,6 +162,7 @@ class ProjectService implements IProjectControl {
         return list;
     }
 
+    @Override
     public Integer isProjectActive(Integer id) {
         Integer count = projectRepo.findAssignmentsByProjectId(id);
         return count > 0 ? 1 : 0;
