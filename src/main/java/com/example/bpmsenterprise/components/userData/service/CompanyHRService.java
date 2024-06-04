@@ -3,6 +3,7 @@ package com.example.bpmsenterprise.components.userData.service;
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
 import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
+import com.example.bpmsenterprise.components.userData.DTO.AcceptInvDTO;
 import com.example.bpmsenterprise.components.userData.DTO.UserDTO;
 import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.UserInviteResponseEntity;
 import com.example.bpmsenterprise.components.userData.entity.Company;
@@ -58,15 +59,14 @@ public class CompanyHRService implements ICompanyHRControl {
     }
 
     @Override
-    public void acceptInvitation(Integer id) {
+    public void acceptInvitation(AcceptInvDTO acceptInvDTO) {
         User user = userData.getUserByEmail(userData.getCurrentUserEmail());
 
-        Invitation invitation = invitationsRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        Invitation invitation = invitationsRepo.findById(acceptInvDTO.getId()).orElseThrow(EntityNotFoundException::new);
 
         Company company = companyRepo.findById(invitation.getCompany().getId()).orElseThrow(EntityNotFoundException::new);
 
         User_role_in_company newUserInCompany = new User_role_in_company();
-
 
         newUserInCompany.setUser(user);
         Role_in_company role_in_company = new Role_in_company();
@@ -96,5 +96,16 @@ public class CompanyHRService implements ICompanyHRControl {
         userDTO.setBirth_day(user.getBirth_day());
 
         return userDTO;
+    }
+
+    @Override
+    public Integer reject(Integer delId) {
+
+
+        Invitation invitation = invitationsRepo.findById(delId).orElseThrow(EntityNotFoundException::new);
+
+        invitationsRepo.delete(invitation);
+
+        return invitation.getId();
     }
 }

@@ -3,6 +3,7 @@ package com.example.bpmsenterprise.components.userData.service;
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
 import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
+import com.example.bpmsenterprise.components.userData.DTO.SpecDTO;
 import com.example.bpmsenterprise.components.userData.DTO.UserCompany;
 import com.example.bpmsenterprise.components.userData.controllers.company.CreateCompanyRequest;
 import com.example.bpmsenterprise.components.userData.entity.Company;
@@ -10,6 +11,7 @@ import com.example.bpmsenterprise.components.userData.entity.Role_in_company;
 import com.example.bpmsenterprise.components.userData.entity.User_role_in_company;
 import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker;
 import com.example.bpmsenterprise.components.userData.interfaces.ICompanyControl;
+import com.example.bpmsenterprise.components.userData.interfaces.ISpecControl;
 import com.example.bpmsenterprise.components.userData.repository.CompanyRepo;
 import com.example.bpmsenterprise.components.userData.repository.User_role_in_companyRepo;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +28,7 @@ public class CompanyService implements ICompanyControl {
     private final User_role_in_companyRepo userRoleInCompanyRepo;
     private final CompanyRepo companyRepo;
     private final UserRepository userRepository;
+    private final ISpecControl iSpecControl;
 
     @Override
     @Transactional
@@ -75,9 +78,12 @@ public class CompanyService implements ICompanyControl {
         User user = userData.getUserByEmail(userData.getCurrentUserEmail());
         User_role_in_company userRoleInCompany = userRoleInCompanyRepo.findByUserId(user.getId()).orElseThrow(EntityNotFoundException::new);
         UserCompany userCompany = new UserCompany();
+        userCompany.setId(userRoleInCompany.getDepartment().getId());
         userCompany.setName(userRoleInCompany.getDepartment().getName());
         userCompany.setDesc(userRoleInCompany.getDepartment().getDesc());
         userCompany.setRole(userRoleInCompany.getRole_in_company().getName());
+        List<SpecDTO> list = iSpecControl.fetch(userCompany.getName());
+        userCompany.setList(list);
         return userCompany;
     }
 

@@ -35,7 +35,7 @@ public class AccessByUser implements AccessType {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "byRequest")
+    @Column(name = "by_request")
     private Boolean byRequest;
 
 

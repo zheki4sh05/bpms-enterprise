@@ -14,7 +14,8 @@ public class ProjectStatusDTO {
     private Double done;
     private Integer isOverdue;
     private Integer isActive;
-    private List<ViewUserAsWorker> workers;
+    private Integer leader;
+    private List<Integer> workers;
 
     public ProjectStatusDTO(Integer id) {
         this.id = id;

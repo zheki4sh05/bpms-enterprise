@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +19,10 @@ public class DocumentInfoDTO {
     private LocalDate downloadAt;
     private String access;
     private Double size;
+    private String accessType;
+    private Integer projectId;
+    private List<Integer> users;
+
+//    private String type;
+//    private Integer uploadUserId;
 }

@@ -8,6 +8,24 @@ import java.time.LocalDate;
 
 @Data
 public class ViewProject {
+    private Integer id;
+    private String name;
+    private String description;
+    private LocalDate createdAt;
+    private LocalDate deadline;
+    private String role;
+    private String color;
+    private String roleName;
+
+    public ViewProject(Integer id, String name, String description, LocalDate createdAt, LocalDate deadline, String color) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.deadline = deadline;
+        this.color = color;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -64,13 +82,15 @@ public class ViewProject {
         this.color = color;
     }
 
-    private Integer id;
-    private String name;
-    private String description;
-    private LocalDate createdAt;
-    private LocalDate deadline;
-    private String role;
-    private String color;
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
 
     public ViewProject() {
     }

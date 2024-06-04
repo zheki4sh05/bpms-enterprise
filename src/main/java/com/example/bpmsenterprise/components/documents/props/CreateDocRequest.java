@@ -4,6 +4,7 @@ import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWor
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString
 public class CreateDocRequest {
 
     private String companyName;

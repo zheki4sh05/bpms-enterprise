@@ -2,6 +2,7 @@ package com.example.bpmsenterprise.components.assignment.entity;
 
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.userData.entity.Company;
+import com.example.bpmsenterprise.components.userData.entity.Project;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +38,8 @@ public class Assignment {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private AssignmentStatus status;
+    @Column(name = "status")
+    private Status status;
+
+
 }

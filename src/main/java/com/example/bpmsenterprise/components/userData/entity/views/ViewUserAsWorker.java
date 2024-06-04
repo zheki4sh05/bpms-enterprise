@@ -11,6 +11,20 @@ public class ViewUserAsWorker {
     private String firstname;
     private String lastname;
     private String email;
+    private Integer spec;
+
+    public ViewUserAsWorker(Integer id) {
+        this.id = id;
+    }
+
+    public ViewUserAsWorker(Integer id, String role, String firstname, String lastname, String email, Integer spec) {
+        this.id = id;
+        this.role = role;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.spec = spec;
+    }
 
     public ViewUserAsWorker() {
     }
@@ -23,7 +37,8 @@ public class ViewUserAsWorker {
         this.email = email;
     }
 
-    public ViewUserAsWorker(String firstname, String lastname, String email) {
+    public ViewUserAsWorker(Integer id, String firstname, String lastname, String email) {
+        this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;

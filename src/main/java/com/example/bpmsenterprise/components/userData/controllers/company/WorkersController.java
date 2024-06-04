@@ -43,14 +43,14 @@ public class WorkersController {
     @GetMapping("/relevant")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> getRelevantWorkers(@RequestHeader Map<String, String> headers,
-                                                @RequestParam(value = "projectName") String projectName,
+                                                @RequestParam(value = "projectId") Integer id,
                                                 @RequestParam(value = "start") String startDate,
                                                 @RequestParam(value = "deadline") String deadline,
-                                                @RequestParam(value = "specialization") String specialization
+                                                @RequestParam(value = "specialization") Integer specialization
     ) {
 
         try {
-            List<ViewUserAsWorker> workers = userActivityControl.getRelevantFor(projectName, startDate, deadline, specialization);
+            List<ViewUserAsWorker> workers = userActivityControl.getRelevantFor(id, startDate, deadline, specialization);
 
             return new ResponseEntity<>(workers, HttpStatus.OK);
         } catch (EntityNotFoundException e) {

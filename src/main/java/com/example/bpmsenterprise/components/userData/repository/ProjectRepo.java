@@ -68,14 +68,49 @@ public interface ProjectRepo extends JpaRepository<Project, Integer> {
          """)
  Optional<List<ProjectStatusDTO>> findByDepartmentNameAndUserId(@Param("id") Integer id, @Param("companyName") String companyName);
 
- @Query(value = """
-             select count(a.id)
-             from Association a
-             where a.project.id = :projectId
+    @Query(value = """
+                select count(a.id)
+                from Association a
+                where a.project.id = :projectId
 
-         """)
- Integer findAssignmentsByProjectId(@Param("projectId") Integer projectId);
+            """)
+    Integer findAssignmentsByProjectId(@Param("projectId") Integer projectId);
 
+    @Query("""
+
+            select u.user.id
+            from User_role_in_project  u
+            where u.project= :projectId and  u.role_in_project.id=1
+
+            """)
+    Integer getLeaderById(@Param("projectId") Integer id);
+
+    @Query(value = """
+
+            select new com.example.bpmsenterprise.components.userData.entity.views.ViewProject(
+                         p.id,
+                         p.name,
+                         p.description,
+                         p.created_at,
+                         p.deadline,
+                         p.color  
+                        ) 
+                     from Project p
+                     join Company dep on dep.name = :companyName and dep.id = p.company.id
+                   
+                   
+            """)
+    List<ViewProject> getAllByDepNameAndUserId(@Param("companyName") String companyName);
+
+    @Query("""
+
+             select new com.example.bpmsenterprise.components.userData.DTO.ProjectStatusDTO(p.id) 
+                             from Project  p
+                             join Company dep on dep.name = :companyName and dep.id = p.company.id
+                        
+
+            """)
+    List<ProjectStatusDTO> findAllByDepartmentName(@Param("companyName") String companyName);
 }
 //       select new com.example.bpmsenterprise.components.userData.entity.views.ViewProject(
 //               p.id,

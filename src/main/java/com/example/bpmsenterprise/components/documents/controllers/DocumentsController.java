@@ -1,7 +1,8 @@
 package com.example.bpmsenterprise.components.documents.controllers;
 
-import com.example.bpmsenterprise.components.assignment.controller.CreateAssignmentRequest;
+
 import com.example.bpmsenterprise.components.documents.DTO.DocumentInfoDTO;
+import com.example.bpmsenterprise.components.documents.DTO.DocumentSourceDTO;
 import com.example.bpmsenterprise.components.documents.exceptions.DocumentUploadException;
 import com.example.bpmsenterprise.components.documents.interfaces.IDocumentsControl;
 import com.example.bpmsenterprise.components.documents.props.CreateDocRequest;
@@ -29,6 +30,7 @@ public class DocumentsController {
                                             @ModelAttribute CreateDocRequest createDocRequest) {
 
         try {
+            System.out.println(createDocRequest);
             List<DocumentInfoDTO> documentInfoDTOs = documentsControl.upload(createDocRequest);
             return ResponseEntity.ok(documentInfoDTOs);
         } catch (DataIntegrityViolationException | DocumentUploadException e) {
@@ -38,16 +40,48 @@ public class DocumentsController {
     }
 
     @CrossOrigin
-    @PostMapping("/fetch")
+    @GetMapping("/fetch")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> fetchDocument(@RequestHeader Map<String, String> headers,
-                                           @RequestParam(value = "alignment") String alignment,
-                                           @RequestParam(value = "company") String company) {
-
+                                           @RequestParam(value = "company") String company,
+                                           @RequestParam(value = "type") String type) {
 
         try {
-            List<DocumentInfoDTO> documentInfoDTOs = documentsControl.fetch(alignment, company);
+            List<DocumentInfoDTO> documentInfoDTOs = documentsControl.fetch(company, type);
             return ResponseEntity.ok(documentInfoDTOs);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().header("error", "419").body(e.getMessage());
+        }
+
+    }
+
+    @CrossOrigin
+    @GetMapping("/info")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> fetchDocument(@RequestHeader Map<String, String> headers,
+                                           @RequestParam(value = "docId") Integer id,
+                                           @RequestParam(value = "type") String type) {
+        try {
+            DocumentSourceDTO documentSourceDTO = documentsControl.getDocInfo(id, type);
+            return ResponseEntity.ok(documentSourceDTO);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().header("error", "419").body(e.getMessage());
+        }
+
+    }
+
+
+    @CrossOrigin
+    @GetMapping("/doc_for_assignment")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> moreInfo(@RequestHeader Map<String, String> headers,
+                                      @RequestParam(value = "companyId") Integer companyId,
+                                      @RequestParam(value = "userId") Integer userId,
+                                      @RequestParam(value = "projectId") Integer projectId,
+                                      @RequestParam(value = "type") String type) {
+        try {
+            List<DocumentInfoDTO> documentSourceDTO = documentsControl.docAssignment(companyId, userId, projectId, type);
+            return ResponseEntity.ok(documentSourceDTO);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.badRequest().header("error", "419").body(e.getMessage());
         }

@@ -1,9 +1,11 @@
 package com.example.bpmsenterprise.components.documents.service;
 
+import com.example.bpmsenterprise.components.assignment.repository.AssignmentHasDocRepo;
 import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
 import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
 import com.example.bpmsenterprise.components.documents.DTO.DocumentInfoDTO;
+import com.example.bpmsenterprise.components.documents.DTO.DocumentSourceDTO;
 import com.example.bpmsenterprise.components.documents.entity.DocumentEntity;
 import com.example.bpmsenterprise.components.documents.entity.Type;
 import com.example.bpmsenterprise.components.documents.entity.access.AccessByCompany;
@@ -60,6 +62,7 @@ public class DocumentsService implements IDocumentsControl {
     private final UserRepository userRepository;
     private final IProjectControl projectControl;
     private final UserData userData;
+    private final AssignmentHasDocRepo assignmentHasDocRepo;
 
     private String generateFileName(
             final MultipartFile file
@@ -85,10 +88,15 @@ public class DocumentsService implements IDocumentsControl {
 
     ) throws DocumentUploadException {
 
-        String path = FileProcessor.createPath(Arrays.asList(String.valueOf(companyId),
+        List<String> props = projectId != 0 ? Arrays.asList(String.valueOf(companyId),
                 String.valueOf(projectId),
                 multipartFile.getOriginalFilename()
-        ), "/");
+        ) :
+                Arrays.asList(String.valueOf(companyId),
+                        multipartFile.getOriginalFilename()
+                );
+
+        String path = FileProcessor.createPath(props, "/");
         System.out.println("bucket " + minioProperties.getDocumentsBucket());
         System.out.println("path " + path);
         try {
@@ -108,7 +116,7 @@ public class DocumentsService implements IDocumentsControl {
 
     @Override
     public List<DocumentInfoDTO> upload(CreateDocRequest createDocRequest) throws DocumentUploadException {
-
+        System.out.println(createDocRequest);
         Company company = companyRepo.findBy(createDocRequest.getCompanyName()).orElseThrow(EntityExistsException::new);
 
         List<DocumentEntity> documentEntities;
@@ -116,26 +124,8 @@ public class DocumentsService implements IDocumentsControl {
 
         documentEntities = uploadDocument(company, createDocRequest.getProjectId(), createDocRequest);
 
-//        switch(createDocRequest.getAlignment()){
-//            case "report":{
-//
-//                documentEntities  = uploadReport(company,createDocRequest.getProjectId(), createDocRequest);
-//
-//                break;
-//            }
-//            default:{
-//
-//                break;
-//            }
-//        }
-
-
         documentEntities.forEach(item -> {
-
-//            accessDispatcher(createDocRequest.getType(), company, projectRepo.getReferenceById(createDocRequest.getProjectId()), item, createDocRequest.getWorkers(), createDocRequest.getByRequest());
-
-
-            documentInfoDTOS.add(createInfo(item, createDocRequest.getType()));
+            documentInfoDTOS.add(createInfo(item, createDocRequest.getType(), createDocRequest.getOriginalType()));
         });
 
 
@@ -143,15 +133,12 @@ public class DocumentsService implements IDocumentsControl {
     }
 
 
-//    private List<DocumentEntity> uploadReport(Company company, Integer projectId, CreateDocRequest createDocRequest) {
-//
-//        List<DocumentEntity> list = new ArrayList<>();
-//
-//    }
+
 
     private List<DocumentEntity> uploadDocument(Company company, Integer projectId, CreateDocRequest createDocRequest) throws DocumentUploadException {
 
-        Project project = projectRepo.getReferenceById(createDocRequest.getProjectId());
+
+        Project project = projectId != 0 ? projectRepo.getReferenceById(createDocRequest.getProjectId()) : null;
 
         List<DocumentEntity> list = new ArrayList<>();
 
@@ -184,8 +171,8 @@ public class DocumentsService implements IDocumentsControl {
 
             Integer id = documentsRepo.save(documentEntity).getId();
             documentEntity.setId(id);
-            if (createDocRequest.getAlignment().equals("document"))
-                accessDispatcher(createDocRequest.getOriginalType(), company, project, documentEntity, createDocRequest.getWorkers(), createDocRequest.getByRequest());
+
+            accessDispatcher(createDocRequest.getOriginalType(), company, project, documentEntity, createDocRequest.getWorkers(), createDocRequest.getByRequest());
 
             list.add(documentEntity);
 
@@ -260,28 +247,28 @@ public class DocumentsService implements IDocumentsControl {
     }
 
     @Override
-    public List<DocumentInfoDTO> fetch(String alignment, String companyName) {
+    public List<DocumentInfoDTO> fetch(String companyName, String type) {
         User user = userData.getUserByEmail(userData.getCurrentUserEmail());
 
         Company company = companyRepo.findBy(companyName).orElseThrow(EntityNotFoundException::new);
 
-        List<AccessByCompany> accessByCompanies = accessPublicRepo.findByCompanyName(companyName);
+        List<AccessByCompany> accessByCompanies = accessPublicRepo.findByCompanyName(companyName, Type.valueOf(type));
 
         List<ViewProject> projects = projectControl.getAllProjects(companyName);
         List<AccessByProject> accessByProjectList = new ArrayList<>();
         projects.forEach(project -> {
-            List<AccessByProject> accessList = accessProjectRepo.findByProjectIdAndCompanyId(company.getId(), project.getId());
+            List<AccessByProject> accessList = accessProjectRepo.findByProjectIdAndCompanyId(company.getId(), project.getId(), Type.valueOf(type));
             accessByProjectList.addAll(accessList);
         });
 
-        List<AccessByUser> accessByUserLit = accessUserRepo.findByUserId(company.getId(), user.getId());
+        List<AccessByUser> accessByUserLit = accessUserRepo.findByUserId(company.getId(), user.getId(), Type.valueOf(type));
 
 
-        List<DocumentInfoDTO> docPublic = doMapping(accessByCompanies, "Общедоступный"); //дополнить интерфейс AccessType методами и сделать doMapping дженериком
+        List<DocumentInfoDTO> docPublic = doMapping(accessByCompanies, "Общедоступный", "public");
+        List<DocumentInfoDTO> docProject = doMapping(accessByProjectList, "Проект", "project");
 
-        List<DocumentInfoDTO> docProject = doMapping(accessByProjectList, "Проект");
+        List<DocumentInfoDTO> docUser = doMapping(accessByUserLit, "Личный", "user");
 
-        List<DocumentInfoDTO> docUser = doMapping(accessByUserLit, "Личный");
 
         docPublic.addAll(docProject);
         docPublic.addAll(docUser);
@@ -289,19 +276,60 @@ public class DocumentsService implements IDocumentsControl {
         return docPublic;
     }
 
-    private <T extends AccessType, R> List<R> doMapping(List<T> entityList, String access) {
+    @Override
+    public DocumentSourceDTO getDocInfo(Integer id, String type) {
+
+        DocumentSourceDTO documentSourceDTO = new DocumentSourceDTO();
+
+        switch (type) {
+            case "public" -> {
+
+            }
+            case "project" -> {
+                List<Integer> projects = accessProjectRepo.getProjectsIdByDocId(id);
+                documentSourceDTO.setProjects(projects);
+            }
+            case "user" -> {
+                List<Integer> workers = accessUserRepo.getUsersIdByDocId(id);
+                documentSourceDTO.setWorkers(workers);
+            }
+            default -> {
+
+            }
+        }
+        List<Integer> assignments = assignmentHasDocRepo.getAssignmentsIdByDocId(id);
+        documentSourceDTO.setAssignments(assignments);
+
+        return documentSourceDTO;
+    }
+
+    @Override
+    public List<DocumentInfoDTO> docAssignment(Integer companyId, Integer userId, Integer projectId, String type) {
+
+        User user = userData.getUserByEmail(userData.getCurrentUserEmail());
+
+        List<AccessByProject> accessByProjectList = accessProjectRepo.findByProjectIdAndCompanyId(companyId, projectId, Type.valueOf(type)).stream().filter(item -> item.getDocumentEntity().getType().toString().equals(type)).toList();
+
+//        List<AccessByUser> accessByUsers = documentsRepo.findByAdminAndParticipantId(user.getId(), userId);
+
+        List<DocumentInfoDTO> list = doMapping(accessByProjectList, "Проект", "project");
+
+        return list;
+    }
+
+    private <T extends AccessType, R> List<R> doMapping(List<T> entityList, String access, String aPublic) {
 
         List<R> list = new ArrayList<>();
 
         entityList.forEach(item -> {
 
-            list.add((R) createInfo(item.getFile(), access));
+            list.add((R) createInfo(item.getFile(), access, aPublic));
         });
 
         return list;
     }
 
-    private DocumentInfoDTO createInfo(DocumentEntity item, String access) {
+    private DocumentInfoDTO createInfo(DocumentEntity item, String access, String aPublic) {
         DocumentInfoDTO documentInfoDTO = DocumentInfoDTO.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -309,6 +337,7 @@ public class DocumentsService implements IDocumentsControl {
                 .downloadAt(item.getLoadAt())
                 .size(item.getSize())
                 .access(access)
+                .accessType(aPublic)
                 .build();
         return documentInfoDTO;
     }

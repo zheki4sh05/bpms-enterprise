@@ -1,5 +1,6 @@
 package com.example.bpmsenterprise.components.assignment.controller;
 
+import com.example.bpmsenterprise.components.assignment.DTO.AssignmentDTO;
 import com.example.bpmsenterprise.components.assignment.interfaces.IAssigmentControl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -20,8 +22,8 @@ public class AssignmentController {
     @CrossOrigin
     @PostMapping("/create")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
-    public ResponseEntity<?> createCompany(@RequestHeader Map<String, String> headers,
-                                           @RequestBody CreateAssignmentRequest assignmentRequest) {
+    public ResponseEntity<?> create(@RequestHeader Map<String, String> headers,
+                                    @RequestBody CreateAssignmentRequest assignmentRequest) {
 
         try {
             Integer id = assigmentControl.createNewAssignment(assignmentRequest);
@@ -31,5 +33,40 @@ public class AssignmentController {
         }
 
     }
+
+    @CrossOrigin
+    @GetMapping("/fetch")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> fetch(@RequestHeader Map<String, String> headers,
+                                   @RequestParam("userEmail") String userEmail,
+                                   @RequestParam("role") String role,
+                                   @RequestParam("size") String size) {
+
+        try {
+            List<AssignmentDTO> list = assigmentControl.fetch(userEmail, role, size);
+            return ResponseEntity.ok(list);
+        } catch (DataIntegrityViolationException e) { // если у пользователя уже есть компания
+            return ResponseEntity.badRequest().header("error", "419").body("already has company");
+        }
+
+    }
+
+//    @CrossOrigin
+//    @GetMapping("/fetch_statuses")
+//    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+//    public ResponseEntity<?> fetchStatuses(@RequestHeader Map<String, String> headers,
+//                                   @RequestParam("userEmail") String userEmail,
+//                                   @RequestParam("role") String role,
+//                                   @RequestParam("size") String size) {
+//
+//        try {
+//            List<AssignmentDTO> list = assigmentControl.fetchStatuses(userEmail, role, size);
+//            return ResponseEntity.ok(list);
+//        } catch (DataIntegrityViolationException e) {
+//            return ResponseEntity.badRequest().header("error", "419").body("already has company");
+//        }
+//
+//    }
+
 
 }

@@ -24,6 +24,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 
 @Service
 @RequiredArgsConstructor
@@ -117,9 +119,35 @@ class ProjectService implements IProjectControl {
     public List<ViewProject> getAllProjects(String companyName) {
         User user = userData.getUserByEmail(userData.getCurrentUserEmail());
 
-        List<ViewProject> projects = projectRepo.getByDepartmentNameAndUserId(user.getId(), companyName).orElseThrow(EntityNotFoundException::new);
+        User_role_in_company userRoleInCompany = userRoleInCompanyRepo.findByUserId(user.getId()).orElseThrow(EntityNotFoundException::new);
+        List<ViewProject> projects;
+        if (userRoleInCompany.getRole_in_company().getName().equals("admin")) {
 
-        return projects;
+            projects = projectRepo.getAllByDepNameAndUserId(companyName).stream().peek((item) -> item.setRole("admin")).toList();
+
+        } else {
+            projects = projectRepo.getByDepartmentNameAndUserId(user.getId(), companyName).orElseThrow(EntityNotFoundException::new);
+        }
+
+
+        return projects.stream().peek((item) -> item.setRoleName(getRoleName(item.getRole()))).toList();
+    }
+
+    private String getRoleName(String type) {
+        switch (type) {
+            case "admin": {
+                return "Управляющий";
+            }
+            case "participant": {
+                return "Участник";
+            }
+            case "viewer": {
+                return "Наблюдаю";
+            }
+            default: {
+                return "Участник";
+            }
+        }
     }
 
     @Override
@@ -150,14 +178,25 @@ class ProjectService implements IProjectControl {
     public List<ProjectStatusDTO> getProjectsStatuses(String companyName) {
         User user = userData.getUserByEmail(userData.getCurrentUserEmail());
 
-        List<ProjectStatusDTO> list = projectRepo.findByDepartmentNameAndUserId(user.getId(), companyName).orElseThrow(EntityNotFoundException::new);
+        User_role_in_company userRoleInCompany = userRoleInCompanyRepo.findByUserId(user.getId()).orElseThrow(EntityNotFoundException::new);
+        List<ProjectStatusDTO> list;
+        if (userRoleInCompany.getRole_in_company().getName().equals("admin")) {
+            list = projectRepo.findAllByDepartmentName(companyName);
+
+        } else {
+            list = projectRepo.findByDepartmentNameAndUserId(user.getId(), companyName).orElseThrow(EntityNotFoundException::new);
+
+
+        }
 
         for (ProjectStatusDTO item : list) {
             item.setDone(projectRepo.countResultById(item.getId()).orElse(0.));
             item.setIsOverdue(projectRepo.isOverdue(item.getId()));
-            item.setWorkers(getAllWorkers(item.getId()));
+            item.setWorkers(getAllWorkers(item.getId()).stream().map(ViewUserAsWorker::getId).toList());
             item.setIsActive(isProjectActive(item.getId()));
+            item.setLeader(userRepository.getLeaderById(item.getId()).getId());
         }
+
 
         return list;
     }

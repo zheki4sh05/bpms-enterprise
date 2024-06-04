@@ -5,5 +5,5 @@ import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWor
 import java.util.List;
 
 public interface IUserActivityControl {
-    List<ViewUserAsWorker> getRelevantFor(String projectName, String startDate, String deadline, String specialization);
+    List<ViewUserAsWorker> getRelevantFor(Integer projectName, String startDate, String deadline, Integer specialization);
 }

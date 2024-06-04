@@ -1,5 +1,6 @@
 package com.example.bpmsenterprise.components.userData.controllers.company;
 
+import com.example.bpmsenterprise.components.userData.DTO.AcceptInvDTO;
 import com.example.bpmsenterprise.components.userData.DTO.UserCompany;
 import com.example.bpmsenterprise.components.userData.DTO.UserDTO;
 import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.AcceptInvitationEntity;
@@ -45,11 +46,11 @@ public class CompanyInviteUserController {
     @PostMapping("/accept_invitation")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> accept(@RequestHeader Map<String, String> headers,
-                                    @RequestParam(value = "id") String userId) {
+                                    @RequestBody AcceptInvDTO acceptInvDTO) {
 
         try {
-            companyHRControl.acceptInvitation(Integer.parseInt(userId));
-            return new ResponseEntity<>(userId, HttpStatus.OK);
+            companyHRControl.acceptInvitation(acceptInvDTO);
+            return new ResponseEntity<>(acceptInvDTO.getId(), HttpStatus.OK);
         } catch (EntityNotFoundException e) { //
             return ResponseEntity.badRequest().header("error", "404").body(e.getMessage());
         }
@@ -62,6 +63,21 @@ public class CompanyInviteUserController {
         try {
             UserDTO userDTO = companyHRControl.findUser(userEmail);
             return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new EntityNotFoundException(String.valueOf(HttpStatus.NOT_FOUND.value()), e),
+                    HttpStatus.NOT_FOUND);
+        }
+
+
+    }
+
+    @DeleteMapping("/reject_invitation")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> reject(@RequestHeader Map<String, String> headers,
+                                    @RequestParam(value = "id") Integer delId) {
+        try {
+            Integer id = companyHRControl.reject(delId);
+            return new ResponseEntity<>(id, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(new EntityNotFoundException(String.valueOf(HttpStatus.NOT_FOUND.value()), e),
                     HttpStatus.NOT_FOUND);
