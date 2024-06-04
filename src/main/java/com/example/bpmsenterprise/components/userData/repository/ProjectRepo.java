@@ -44,7 +44,7 @@ public interface ProjectRepo extends JpaRepository<Project, Integer> {
                       from assignment s 
                       join association a on a.project_id = :#{#projectId} and a.assignment_id =s.id) * 100 
               from assignment s 
-              join association a on a.project_id = :#{#projectId} and a.assignment_id =s.id and s.status_id = 1
+              join association a on a.project_id = :#{#projectId} and a.assignment_id =s.id and s.status='done'
 
          """, nativeQuery = true)
  Optional<Double> countResultById(@Param("projectId") Integer projectId);

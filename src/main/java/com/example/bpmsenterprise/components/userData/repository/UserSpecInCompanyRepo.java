@@ -16,4 +16,6 @@ public interface UserSpecInCompanyRepo extends JpaRepository<UserSpecInCompany, 
 
             """)
     UserSpecInCompany findBySpecUserId(@Param("userId") Integer id);
+
+
 }

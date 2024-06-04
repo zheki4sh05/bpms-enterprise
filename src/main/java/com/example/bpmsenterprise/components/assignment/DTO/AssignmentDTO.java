@@ -18,18 +18,13 @@ public class AssignmentDTO {
 
     private Integer id;
 
-
     private LocalDate startAt;
-
 
     private LocalDate createdAt;
 
-
-    private LocalDate deadline;
-
+    private String deadline;
 
     private String name;
-
 
     private String description;
 
@@ -38,11 +33,14 @@ public class AssignmentDTO {
     private String statusName;
 
     private Integer user;
+
     private Integer worker;
 
     private Integer projectId;
 
     private Integer stageId;
+
+    private String stageName;
 
 
 }

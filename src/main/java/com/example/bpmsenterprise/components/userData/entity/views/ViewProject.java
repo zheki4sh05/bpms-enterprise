@@ -1,10 +1,12 @@
 package com.example.bpmsenterprise.components.userData.entity.views;
 
+import com.example.bpmsenterprise.components.userData.DTO.StagesDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class ViewProject {
@@ -16,6 +18,7 @@ public class ViewProject {
     private String role;
     private String color;
     private String roleName;
+    private List<StagesDTO> stages;
 
     public ViewProject(Integer id, String name, String description, LocalDate createdAt, LocalDate deadline, String color) {
         this.id = id;

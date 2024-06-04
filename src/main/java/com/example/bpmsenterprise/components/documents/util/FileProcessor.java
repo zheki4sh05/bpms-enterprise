@@ -28,5 +28,22 @@ public class FileProcessor {
         return stringBuilder.toString();
     }
 
+    public static String accessName(String access) {
+        switch (access) {
+            case "public" -> {
+                return "Публичный";
+            }
+            case "project" -> {
+                return "Проект";
+            }
+            case "user" -> {
+                return "Пользователи";
+            }
+            default -> {
+                return "Публичный";
+            }
+        }
+    }
+
 
 }

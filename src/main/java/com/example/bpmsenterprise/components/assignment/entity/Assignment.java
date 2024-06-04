@@ -1,13 +1,12 @@
 package com.example.bpmsenterprise.components.assignment.entity;
 
 import com.example.bpmsenterprise.components.authentication.entity.User;
+import com.example.bpmsenterprise.components.documents.entity.Type;
 import com.example.bpmsenterprise.components.userData.entity.Company;
 import com.example.bpmsenterprise.components.userData.entity.Project;
+import com.example.bpmsenterprise.components.userData.entity.Stage;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -16,6 +15,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Table(name = "assignment")
 public class Assignment {
     @Id
@@ -30,7 +30,7 @@ public class Assignment {
     private LocalDate createdAt;
 
     @Column(name = "deadline")
-    private LocalDate deadline;
+    private String deadline;
 
     @Column(name = "name")
     private String name;
@@ -38,7 +38,12 @@ public class Assignment {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "status")
+
+    @ManyToOne
+    @JoinColumn(name = "stage_id")
+    private Stage stage;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
 

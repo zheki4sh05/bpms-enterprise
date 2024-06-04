@@ -1,10 +1,12 @@
 package com.example.bpmsenterprise.components.userData.entity.views;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@Builder
 public class ViewUserAsWorker {
     private Integer id;
     private String role;

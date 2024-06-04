@@ -5,16 +5,14 @@ import com.example.bpmsenterprise.components.authentication.interfaces.UserData;
 import com.example.bpmsenterprise.components.authentication.repos.UserRepository;
 import com.example.bpmsenterprise.components.userData.DTO.CreateProject.CreateProjectDTO;
 import com.example.bpmsenterprise.components.userData.DTO.ProjectStatusDTO;
+import com.example.bpmsenterprise.components.userData.DTO.StagesDTO;
 import com.example.bpmsenterprise.components.userData.controllers.project.ProjectResponseEntity;
 import com.example.bpmsenterprise.components.userData.controllers.project.ProjectUpdateResponseEntity;
 import com.example.bpmsenterprise.components.userData.entity.*;
 import com.example.bpmsenterprise.components.userData.entity.views.ViewProject;
 import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectControl;
-import com.example.bpmsenterprise.components.userData.repository.CompanyRepo;
-import com.example.bpmsenterprise.components.userData.repository.ProjectRepo;
-import com.example.bpmsenterprise.components.userData.repository.User_role_in_companyRepo;
-import com.example.bpmsenterprise.components.userData.repository.User_role_in_projectRepo;
+import com.example.bpmsenterprise.components.userData.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -37,6 +36,7 @@ class ProjectService implements IProjectControl {
     private final ProjectRepo projectRepo;
     private final User_role_in_companyRepo userRoleInCompanyRepo;
     private final User_role_in_projectRepo userRoleInProjectRepo;
+    private final StagesRepo stagesRepo;
 
     @Override
     public Integer createNewProject(CreateProjectDTO projectResponseEntity) {
@@ -130,7 +130,32 @@ class ProjectService implements IProjectControl {
         }
 
 
-        return projects.stream().peek((item) -> item.setRoleName(getRoleName(item.getRole()))).toList();
+        return projects.stream().peek((item) -> {
+            item.setRoleName(getRoleName(item.getRole()));
+
+            item.setStages(doStagesMapping(stagesRepo.findByProjectId(item.getId())));
+
+
+        }).toList();
+    }
+
+    private List<StagesDTO> doStagesMapping(List<Stage> list) {
+
+
+        List<StagesDTO> arr = new ArrayList<>();
+
+        list.forEach(item -> {
+            StagesDTO stagesDTO = StagesDTO.builder()
+                    .id(item.getId())
+                    .name(item.getName())
+                    .order(item.getOrder())
+                    .build();
+
+            arr.add(stagesDTO);
+        });
+
+
+        return arr;
     }
 
     private String getRoleName(String type) {

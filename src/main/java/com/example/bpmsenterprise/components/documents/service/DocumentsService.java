@@ -329,7 +329,7 @@ public class DocumentsService implements IDocumentsControl {
         return list;
     }
 
-    private DocumentInfoDTO createInfo(DocumentEntity item, String access, String aPublic) {
+    public DocumentInfoDTO createInfo(DocumentEntity item, String access, String aPublic) {
         DocumentInfoDTO documentInfoDTO = DocumentInfoDTO.builder()
                 .id(item.getId())
                 .name(item.getName())

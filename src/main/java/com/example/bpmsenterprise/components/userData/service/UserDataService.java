@@ -31,6 +31,7 @@ public class UserDataService implements IUserDataControl {
     public UserDTO fetch() {
         User user = userData.getUserByEmail(userData.getCurrentUserEmail());
         UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
         userDTO.setFirstname(user.getFirstname());
         userDTO.setLastname(user.getLastname());
         userDTO.setSurname(user.getSurname());

@@ -27,4 +27,13 @@ public interface AssociationRepo extends JpaRepository<Association, Integer> {
 
             """)
     List<Association> findAllByWorkerId(@Param("userId") Integer id);
+
+    @Query("""
+
+                select a
+                from Association a
+                where a.assignment.id = :assignmentId
+
+            """)
+    Association findByAssignmentId(@Param("assignmentId") Integer id);
 }
