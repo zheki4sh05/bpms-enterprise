@@ -29,8 +29,12 @@ public class CreateDocRequest {
 
     private List<ViewUserAsWorker> workers;
 
+    private Integer assignmentId;
+
+    private Integer uploadedUser;
+
     public String getType() {
-        switch (type) {
+        switch (this.type) {
             case "public" -> {
                 return "Публичный";
             }

@@ -18,4 +18,6 @@ public interface ToDoRepo extends JpaRepository<TodoEntity, Integer> {
 
             """)
     List<TodoEntity> findAllByAssignmentId(@Param("assignment_id") Integer id);
+
+
 }

@@ -1,9 +1,13 @@
 package com.example.bpmsenterprise.components.assignment.controller;
 
-import com.example.bpmsenterprise.components.assignment.DTO.AssignmentDTO;
-import com.example.bpmsenterprise.components.assignment.DTO.AssignmentDTOStatuses;
-import com.example.bpmsenterprise.components.assignment.DTO.UpdateAssignmentDTO;
+import com.example.bpmsenterprise.components.assignment.DTO.*;
 import com.example.bpmsenterprise.components.assignment.interfaces.IAssigmentControl;
+import com.example.bpmsenterprise.components.documents.DTO.DocumentInfoDTO;
+import com.example.bpmsenterprise.components.documents.DTO.ToDoDTO;
+import com.example.bpmsenterprise.components.documents.exceptions.DocumentUploadException;
+import com.example.bpmsenterprise.components.documents.interfaces.IDocumentsControl;
+import com.example.bpmsenterprise.components.documents.props.CreateDocRequest;
+import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +24,7 @@ import java.util.Map;
 public class AssignmentController {
 
     private final IAssigmentControl assigmentControl;
+    private final IDocumentsControl documentsControl;
 
     @CrossOrigin
     @PostMapping("/create")
@@ -93,8 +98,76 @@ public class AssignmentController {
         try {
             Integer id = assigmentControl.docDel(docId);
             return ResponseEntity.ok(id);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().header("error", "419").body("already has company");
+        }
+
+    }
+
+    @CrossOrigin
+    @PostMapping("/updateTodos")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> updateTodos(@RequestHeader Map<String, String> headers,
+                                         @RequestBody UpdateTodosRequest updateTodosRequest) {
+
+        try {
+            List<ToDoDTO> toDoDTOList = assigmentControl.updateTodos(updateTodosRequest);
+            return ResponseEntity.ok(toDoDTOList);
         } catch (DataIntegrityViolationException e) { // если у пользователя уже есть компания
             return ResponseEntity.badRequest().header("error", "419").body("already has company");
+        }
+
+    }
+
+    @CrossOrigin
+    @PostMapping("/updateAssignmentWorker")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> updateAssignmentWorker(@RequestHeader Map<String, String> headers,
+                                                    @RequestBody UpdateAssignmentWorkerDTO updateTodosRequest) {
+
+        try {
+            ViewUserAsWorker viewUserAsWorker = assigmentControl.updateAssignmentWorker(updateTodosRequest);
+            return ResponseEntity.ok(viewUserAsWorker);
+        } catch (DataIntegrityViolationException e) { // если у пользователя уже есть компания
+            return ResponseEntity.badRequest().header("error", "419").body("already has company");
+        }
+
+    }
+
+    @CrossOrigin
+    @PostMapping("/changeAssignmentStatus")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> changeAssignmentStatus(@RequestHeader Map<String, String> headers,
+                                                    @RequestBody ChangeAssignmentStatusDTO changeAssignmentStatusDTO) {
+
+        try {
+            AssignmentDTO newStatus = assigmentControl.changeStatus(changeAssignmentStatusDTO);
+            return ResponseEntity.ok(newStatus);
+        } catch (DataIntegrityViolationException e) { // если у пользователя уже есть компания
+            return ResponseEntity.badRequest().header("error", "419").body("already has company");
+        }
+
+    }
+
+
+    @CrossOrigin
+    @PostMapping("/addDocsAssignment")
+    @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    public ResponseEntity<?> addDocs(@RequestHeader Map<String, String> headers,
+                                     @ModelAttribute CreateDocRequest createDocRequest) {
+        try {
+
+            List<DocumentInfoDTO> list = documentsControl.upload(createDocRequest);
+
+            assigmentControl.addDocsAssignment(list.stream().map(item -> Long.valueOf(item.getId())).toList(), createDocRequest);
+
+            AssignmentDTOStatuses assignmentDTOStatuses = assigmentControl.assignmentStatuses(createDocRequest.getAssignmentId());
+
+            return ResponseEntity.ok(assignmentDTOStatuses);
+        } catch (DataIntegrityViolationException e) { // если у пользователя уже есть компания
+            return ResponseEntity.badRequest().header("error", "419").body("already has company");
+        } catch (DocumentUploadException e) {
+            throw new RuntimeException(e);
         }
 
     }

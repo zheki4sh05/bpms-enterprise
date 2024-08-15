@@ -34,4 +34,14 @@ public interface AssignmentHasDocRepo extends JpaRepository<AssignmentDocument, 
                 where d.document_id.id = :docId
             """)
     AssignmentDocument findByDocId(@Param("docId") Integer docId);
+
+
+    @Query("""
+
+                select doc
+                from AssignmentDocument doc
+                where doc.document_id.user.id = :userId
+
+            """)
+    List<DocumentEntity> findAddedDocs(@Param("userId") Integer id);
 }

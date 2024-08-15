@@ -1,6 +1,7 @@
 package com.example.bpmsenterprise.components.documents.entity;
 
 import com.example.bpmsenterprise.components.authentication.entity.Role;
+import com.example.bpmsenterprise.components.authentication.entity.User;
 import com.example.bpmsenterprise.components.userData.entity.Company;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,10 @@ public class DocumentEntity {
 
     @Column(name = "name")
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "uploaded_user")
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private Type type;

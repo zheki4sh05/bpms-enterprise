@@ -19,6 +19,7 @@ public class AssignmentDTOStatuses {
     private List<DocumentInfoDTO> documents;
     private List<DocumentInfoDTO> reports;
     private List<ToDoDTO> toDoDTOList;
-
+    private List<String> statusNames;
+    private List<DocumentInfoDTO> addedDocuments;
 
 }

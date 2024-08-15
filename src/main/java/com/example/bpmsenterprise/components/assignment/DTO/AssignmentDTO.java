@@ -38,9 +38,13 @@ public class AssignmentDTO {
 
     private Integer projectId;
 
+    private String projectName;
+
     private Integer stageId;
 
     private String stageName;
+
+    private String userEmail;
 
 
 }

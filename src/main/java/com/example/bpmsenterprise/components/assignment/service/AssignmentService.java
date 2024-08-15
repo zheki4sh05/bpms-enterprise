@@ -1,8 +1,6 @@
 package com.example.bpmsenterprise.components.assignment.service;
 
-import com.example.bpmsenterprise.components.assignment.DTO.AssignmentDTO;
-import com.example.bpmsenterprise.components.assignment.DTO.AssignmentDTOStatuses;
-import com.example.bpmsenterprise.components.assignment.DTO.UpdateAssignmentDTO;
+import com.example.bpmsenterprise.components.assignment.DTO.*;
 import com.example.bpmsenterprise.components.assignment.controller.CreateAssignmentRequest;
 import com.example.bpmsenterprise.components.assignment.entity.*;
 import com.example.bpmsenterprise.components.assignment.interfaces.IAssigmentControl;
@@ -17,10 +15,10 @@ import com.example.bpmsenterprise.components.authentication.repos.UserRepository
 import com.example.bpmsenterprise.components.documents.DTO.DocumentInfoDTO;
 import com.example.bpmsenterprise.components.documents.DTO.ToDoDTO;
 import com.example.bpmsenterprise.components.documents.entity.DocumentEntity;
+import com.example.bpmsenterprise.components.documents.props.CreateDocRequest;
 import com.example.bpmsenterprise.components.documents.repos.DocumentsRepo;
 import com.example.bpmsenterprise.components.documents.service.DocumentsService;
 import com.example.bpmsenterprise.components.documents.util.FileProcessor;
-import com.example.bpmsenterprise.components.userData.DTO.StagesDTO;
 import com.example.bpmsenterprise.components.userData.UserUtil;
 import com.example.bpmsenterprise.components.userData.entity.Project;
 import com.example.bpmsenterprise.components.userData.entity.Stage;
@@ -35,6 +33,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -80,13 +80,17 @@ public class AssignmentService implements IAssigmentControl {
         //-----------------------------
 
         //---Получаем и сохраняем документы и отчеты
-        List<DocumentEntity> docs = documentsRepo.findAllById(assignmentRequest.getDocuments().stream().map(Long::valueOf).toList());
-        List<DocumentEntity> reports = documentsRepo.findAllById(assignmentRequest.getReports().stream().map(Long::valueOf).toList());
-        List<AssignmentDocument> assignmentDocumentList = getDocEntities(docs, saved);
-        List<AssignmentDocument> assignmentReportsList = getDocEntities(reports, saved);
+//        List<DocumentEntity> docs = documentsRepo.findAllById(assignmentRequest.getDocuments().stream().map(Long::valueOf).toList());
+//        List<DocumentEntity> reports = documentsRepo.findAllById(assignmentRequest.getReports().stream().map(Long::valueOf).toList());
+//        List<AssignmentDocument> assignmentDocumentList = getDocEntities(docs, saved);
+//        List<AssignmentDocument> assignmentReportsList = getDocEntities(reports, saved);
+//
+//        assignmentHasDocRepo.saveAll(assignmentDocumentList);
+//        assignmentHasDocRepo.saveAll(assignmentReportsList);
 
-        assignmentHasDocRepo.saveAll(assignmentDocumentList);
-        assignmentHasDocRepo.saveAll(assignmentReportsList);
+        saveAssignmentsDocs(assignmentRequest.getDocuments().stream().map(Long::valueOf).toList(),
+                assignmentRequest.getReports().stream().map(Long::valueOf).toList(),
+                saved);
 
         //-----------------------------
 
@@ -105,10 +109,6 @@ public class AssignmentService implements IAssigmentControl {
 
         //---Сохраняем Туду лист-----
 
-        List<TodoEntity> todoEntities = new ArrayList<>();
-
-        System.out.println(assignmentRequest.getTasks().get(0).getIsDone());
-
         assignmentRequest.getTasks().forEach(item -> {
 
             TodoEntity todoEntity = TodoEntity.builder()
@@ -116,8 +116,6 @@ public class AssignmentService implements IAssigmentControl {
                     .isDone(item.getIsDone())
                     .assignment(saved)
                     .build();
-
-            System.out.println(todoEntity);
 
             toDoRepo.save(todoEntity);
 
@@ -171,7 +169,7 @@ public class AssignmentService implements IAssigmentControl {
         AssignmentDTOStatuses assignmentDTOStatuses = new AssignmentDTOStatuses();
 
         Association association = associationRepo.findByAssignmentId(id);
-        User user = association.getUser();
+
         User workerDAO = association.getWorker();
         Assignment assignment = association.getAssignment();
         ViewUserAsWorker worker = UserUtil.doMapFrom(workerDAO);
@@ -236,6 +234,33 @@ public class AssignmentService implements IAssigmentControl {
         assignmentDTOStatuses.setReports(reports);
 
 
+        assignmentDTOStatuses.setStatusNames(
+
+                Stream.of(Status.values()).map(Status::name).collect(Collectors.toList())
+
+        );
+
+
+        List<DocumentEntity> documentEntityList = assignmentHasDocRepo.findAddedDocs(workerDAO.getId());
+
+        List<DocumentInfoDTO> documentInfoDTOS = new ArrayList<>();
+
+        documentEntityList.forEach(item -> {
+            DocumentInfoDTO documentInfoDTO = DocumentInfoDTO.builder()
+                    .id(item.getId())
+                    .name(item.getName())
+                    .format(item.getExtension())
+                    .downloadAt(item.getLoadAt())
+                    .size(item.getSize())
+                    .access("user")
+                    .accessType(FileProcessor.accessName("user"))
+                    .build();
+            documentInfoDTOS.add(documentInfoDTO);
+
+        });
+
+        assignmentDTOStatuses.setAddedDocuments(documentInfoDTOS);
+
         return assignmentDTOStatuses;
     }
 
@@ -287,6 +312,87 @@ public class AssignmentService implements IAssigmentControl {
         return assignmentDocument.getDocument_id().getId();
     }
 
+    @Override
+    public List<ToDoDTO> updateTodos(UpdateTodosRequest updateTodosRequest) {
+
+
+        Assignment assignment = assignmentRepo.findById(updateTodosRequest.getAssignmentId()).orElseThrow(EntityNotFoundException::new);
+
+        List<TodoEntity> deleteTodoEntityList = toDoRepo.findAllByAssignmentId(assignment.getId());
+
+        deleteTodoEntityList.forEach(item -> {
+            toDoRepo.delete(item);
+        });
+
+
+        List<TodoEntity> todoEntityList = new ArrayList<>();
+
+        updateTodosRequest.getTodos().forEach(item -> {
+
+            TodoEntity todoEntity = new TodoEntity();
+
+            todoEntity.setAssignment(assignment);
+            todoEntity.setName(item.getVal());
+            todoEntity.setIsDone(item.getIsDone());
+            todoEntityList.add(todoEntity);
+        });
+
+        List<TodoEntity> savedList = toDoRepo.saveAll(todoEntityList);
+
+        List<ToDoDTO> toDoDTOList = new ArrayList<>();
+
+        savedList.forEach(item -> {
+            ToDoDTO toDoDTO = ToDoDTO.builder()
+                    .id(item.getId().longValue())
+                    .assignmentId(item.getAssignment().getId())
+                    .isDone(item.getIsDone())
+                    .val(item.getName())
+                    .build();
+            toDoDTOList.add(toDoDTO);
+
+        });
+
+        return toDoDTOList;
+    }
+
+    @Override
+    public ViewUserAsWorker updateAssignmentWorker(UpdateAssignmentWorkerDTO updateTodosRequest) {
+
+
+        Association association = associationRepo.findByAssignmentId(updateTodosRequest.getAssignmentId());
+
+        User user = userRepository.findById(updateTodosRequest.getViewUserAsWorker().getId().longValue()).orElseThrow(EntityNotFoundException::new);
+
+        association.setWorker(user);
+
+        ViewUserAsWorker viewUserAsWorker = ViewUserAsWorker.builder()
+                .spec(updateTodosRequest.getSpec())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .email(user.getEmail())
+                .id(user.getId())
+                .role(updateTodosRequest.getRole())
+                .build();
+
+        return viewUserAsWorker;
+    }
+
+    @Override
+    public AssignmentDTO changeStatus(ChangeAssignmentStatusDTO changeAssignmentStatusDTO) {
+
+        Assignment assignment = assignmentRepo.findById(changeAssignmentStatusDTO.getAssignmentId()).orElseThrow(EntityNotFoundException::new);
+
+        assignment.setStatus(Status.valueOf(changeAssignmentStatusDTO.getNewStatus()));
+
+        assignmentRepo.save(assignment);
+
+        Association association = associationRepo.findByAssignmentId(assignment.getId());
+
+        AssignmentDTO updated = doMapping(List.of(association)).get(0);
+
+        return updated;
+    }
+
     private List<AssignmentDTO> doMapping(List<Association> associationList) {
 
         List<AssignmentDTO> assignmentDTOS = new ArrayList<>();
@@ -303,8 +409,10 @@ public class AssignmentService implements IAssigmentControl {
                     .name(item.getAssignment().getName())
                     .description(item.getAssignment().getDescription())
                     .user(item.getUser().getId())
+                    .userEmail(item.getUser().getEmail())
                     .worker(item.getWorker().getId())
                     .projectId(item.getProject().getId())
+                    .projectName(item.getProject().getName())
                     .startAt(item.getAssignment().getStartAt())
                     .build();
 
@@ -328,12 +436,35 @@ public class AssignmentService implements IAssigmentControl {
             case "done" -> {
                 return "Выполнено";
             }
+            case "accepted" -> {
+                return "Принято";
+            }
             default -> {
                 return "Приостановлено";
             }
-
-
         }
+    }
 
+    private List<AssignmentDocument> saveAssignmentsDocs(List<Long> idsDocs, List<Long> idsReports, Assignment assignment) {
+        List<DocumentEntity> docs = documentsRepo.findAllById(idsDocs);
+        List<DocumentEntity> reports = documentsRepo.findAllById(idsReports);
+        List<AssignmentDocument> assignmentDocumentList = getDocEntities(docs, assignment);
+        List<AssignmentDocument> assignmentReportsList = getDocEntities(reports, assignment);
+
+        assignmentHasDocRepo.saveAll(assignmentDocumentList);
+        assignmentHasDocRepo.saveAll(assignmentReportsList);
+
+        assignmentDocumentList.addAll(assignmentReportsList);
+        return assignmentDocumentList;
+    }
+
+    @Override
+    public List<AssignmentDocument> addDocsAssignment(List<Long> list, CreateDocRequest createDocRequest) {
+
+        Assignment assignment = assignmentRepo.findById(createDocRequest.getAssignmentId()).orElseThrow(EntityNotFoundException::new);
+
+        saveAssignmentsDocs(list, new ArrayList<>(), assignment);
+
+        return saveAssignmentsDocs(list, new ArrayList<>(), assignment);
     }
 }
