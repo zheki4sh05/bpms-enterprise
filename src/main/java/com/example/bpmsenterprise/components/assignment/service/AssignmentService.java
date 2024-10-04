@@ -49,7 +49,6 @@ public class AssignmentService implements IAssigmentControl {
     private final AssignmentHasDocRepo assignmentHasDocRepo;
     private final ToDoRepo toDoRepo;
     private final StagesRepo stagesRepo;
-    private final DocumentsService documentsService;
     private final UserSpecInCompanyRepo userSpecInCompanyRepo;
 
     @Override

@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserActivityService implements IUserActivityControl {
 
-    private final ProjectRepo projectRepo;
     private final UserRepository userRepository;
     private final UserSpecInCompanyRepo userSpecInCompanyRepo;
     private final SpecCompanyRepo specCompanyRepo;

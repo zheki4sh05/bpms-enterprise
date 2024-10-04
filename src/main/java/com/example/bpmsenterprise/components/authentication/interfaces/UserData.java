@@ -8,4 +8,6 @@ public interface UserData {
     User getUserByEmail(String email);
 
     String getCurrentUserEmail();
+
+    User getCurrentUser();
 }

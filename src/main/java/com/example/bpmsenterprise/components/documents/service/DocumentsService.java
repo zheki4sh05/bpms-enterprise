@@ -59,15 +59,7 @@ public class DocumentsService implements IDocumentsControl {
     private final AccessProjectRepo accessProjectRepo;
     private final AccessUserRepo accessUserRepo;
     private final UserRepository userRepository;
-    private final IProjectControl projectControl;
-    private final UserData userData;
     private final AssignmentHasDocRepo assignmentHasDocRepo;
-    private String generateFileName(
-            final MultipartFile file
-    ) {
-        String extension = getExtension(file);
-        return UUID.randomUUID() + "." + extension;
-    }
     private String getExtension(
             final MultipartFile file
     ) {
@@ -104,7 +96,6 @@ public class DocumentsService implements IDocumentsControl {
     }
     @Override
     public List<DocumentInfoDTO> upload(CreateDocRequest createDocRequest) throws DocumentUploadException {
-        System.out.println(createDocRequest);
         Company company = companyRepo.findBy(createDocRequest.getCompanyName()).orElseThrow(EntityExistsException::new);
         List<DocumentEntity> documentEntities;
         List<DocumentInfoDTO> documentInfoDTOS = new ArrayList<>();
@@ -193,15 +184,41 @@ public class DocumentsService implements IDocumentsControl {
                 .documentEntity(documentEntity)
                 .build();
         AccessByCompany company1 = accessPublicRepo.save(access);
-        System.out.println(company1.getCompany().getName());
+
     }
+//    @Override
+//    public List<DocumentInfoDTO> fetch(String companyName, String type) {
+//
+//        User user = userData.getUserByEmail(userData.getCurrentUserEmail());
+//
+//        Company company = companyRepo.findBy(companyName).orElseThrow(EntityNotFoundException::new);
+//
+//        List<AccessByCompany> accessByCompanies = accessPublicRepo.findByCompanyName(companyName, Type.valueOf(type));
+//
+//        List<ViewProject> projects = projectControl.getAllProjects(companyName);
+//
+//        List<AccessByProject> accessByProjectList = new ArrayList<>();
+//
+//        projects.forEach(project -> {
+//            List<AccessByProject> accessList = accessProjectRepo.findByProjectIdAndCompanyId(company.getId(), project.getId(), Type.valueOf(type));
+//            accessByProjectList.addAll(accessList);
+//        });
+//        List<AccessByUser> accessByUserLit = accessUserRepo.findByUserId(company.getId(), user.getId(), Type.valueOf(type));
+//        List<DocumentInfoDTO> docPublic = doMapping(accessByCompanies, "Общедоступный", "public");
+//        List<DocumentInfoDTO> docProject = doMapping(accessByProjectList, "Проект", "project");
+//        List<DocumentInfoDTO> docUser = doMapping(accessByUserLit, "Личный", "user");
+//        docPublic.addAll(docProject);
+//        docPublic.addAll(docUser);
+//        return docPublic;
+//    }
+
     @Override
-    public List<DocumentInfoDTO> fetch(String companyName, String type) {
-        User user = userData.getUserByEmail(userData.getCurrentUserEmail());
-        Company company = companyRepo.findBy(companyName).orElseThrow(EntityNotFoundException::new);
-        List<AccessByCompany> accessByCompanies = accessPublicRepo.findByCompanyName(companyName, Type.valueOf(type));
-        List<ViewProject> projects = projectControl.getAllProjects(companyName);
+    public List<DocumentInfoDTO> fetch(Company company, List<ViewProject> projects, User user, String type) {
+
+        List<AccessByCompany> accessByCompanies = accessPublicRepo.findByCompanyName(company.getName(), Type.valueOf(type));
+
         List<AccessByProject> accessByProjectList = new ArrayList<>();
+
         projects.forEach(project -> {
             List<AccessByProject> accessList = accessProjectRepo.findByProjectIdAndCompanyId(company.getId(), project.getId(), Type.valueOf(type));
             accessByProjectList.addAll(accessList);
@@ -214,6 +231,7 @@ public class DocumentsService implements IDocumentsControl {
         docPublic.addAll(docUser);
         return docPublic;
     }
+
     @Override
     public DocumentSourceDTO getDocInfo(Integer id, String type) {
         DocumentSourceDTO documentSourceDTO = new DocumentSourceDTO();
@@ -241,7 +259,6 @@ public class DocumentsService implements IDocumentsControl {
     @Override
     public List<DocumentInfoDTO> docAssignment(Integer companyId, Integer userId, Integer projectId, String type) {
 
-        User user = userData.getUserByEmail(userData.getCurrentUserEmail());
 
         List<AccessByProject> accessByProjectList = accessProjectRepo.findByProjectIdAndCompanyId(companyId, projectId, Type.valueOf(type)).stream().filter(item -> item.getDocumentEntity().getType().toString().equals(type)).toList();
 

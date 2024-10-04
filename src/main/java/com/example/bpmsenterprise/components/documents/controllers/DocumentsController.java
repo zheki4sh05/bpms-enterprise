@@ -4,6 +4,7 @@ package com.example.bpmsenterprise.components.documents.controllers;
 import com.example.bpmsenterprise.components.documents.DTO.DocumentInfoDTO;
 import com.example.bpmsenterprise.components.documents.DTO.DocumentSourceDTO;
 import com.example.bpmsenterprise.components.documents.exceptions.DocumentUploadException;
+import com.example.bpmsenterprise.components.documents.facade.*;
 import com.example.bpmsenterprise.components.documents.interfaces.IDocumentsControl;
 import com.example.bpmsenterprise.components.documents.props.CreateDocRequest;
 import com.example.bpmsenterprise.components.userData.entity.Company;
@@ -22,6 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DocumentsController {
     private final IDocumentsControl documentsControl;
+    private final IDocumentsFacade documentsFacade;
 
     @CrossOrigin
     @PostMapping("/upload")
@@ -42,12 +44,15 @@ public class DocumentsController {
     @CrossOrigin
     @GetMapping("/fetch")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
-    public ResponseEntity<?> fetchDocument(@RequestHeader Map<String, String> headers,
-                                           @RequestParam(value = "company") String company,
-                                           @RequestParam(value = "type") String type) {
+    public ResponseEntity<?> fetchDocuments(@RequestHeader Map<String, String> headers,
+                                            @RequestParam(value = "company") String company,
+                                            @RequestParam(value = "type") String type) {
 
         try {
-            List<DocumentInfoDTO> documentInfoDTOs = documentsControl.fetch(company, type);
+            // List<DocumentInfoDTO> documentInfoDTOs = documentsControl.fetch(company, type);
+
+            List<DocumentInfoDTO> documentInfoDTOs = documentsFacade.fetchDocumentsFromAllRecourses(company, type);
+
             return ResponseEntity.ok(documentInfoDTOs);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.badRequest().header("error", "419").body(e.getMessage());
