@@ -12,7 +12,8 @@ import com.example.bpmsenterprise.components.authentication.repos.UserRepository
 import com.example.bpmsenterprise.components.authentication.token.Token;
 import com.example.bpmsenterprise.components.authentication.token.TokenRepository;
 import com.example.bpmsenterprise.components.authentication.token.TokenType;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,14 +22,21 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService implements UserData {
-    private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
-    private final TokenRepository tokenRepository;
-    private final CustomSecurityExpression customSecurityExpression;
+    @Autowired
+    private UserRepository repository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private TokenRepository tokenRepository;
+    @Autowired
+    private CustomSecurityExpression customSecurityExpression;
+
     public AuthenticationResponse register(RegisterRequest request) {
-        var user  = User.builder()
+        var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())

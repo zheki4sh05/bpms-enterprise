@@ -58,11 +58,9 @@ public class AssignmentService implements IAssigmentControl {
 
         Project project = projectRepo.findById(assignmentRequest.getProjectId()).orElseThrow(EntityNotFoundException::new);
 
-        List<Stage> list = stagesRepo.findByProjectId(project.getId());
+        List<Stage> list = stagesRepo.findAll();
         Stage stage = null;
-        if (list != null) {
-            stage = list.get(0);
-        }
+        stage = list.get(0);
 
         //------Сохраняем сущность Поручение-----------
         Assignment assignment = Assignment.builder()
@@ -240,17 +238,17 @@ public class AssignmentService implements IAssigmentControl {
         );
 
 
-        List<DocumentEntity> documentEntityList = assignmentHasDocRepo.findAddedDocs(workerDAO.getId());
+        List<AssignmentDocument> documentEntityList = assignmentHasDocRepo.findAddedDocs(workerDAO.getId());
 
         List<DocumentInfoDTO> documentInfoDTOS = new ArrayList<>();
 
         documentEntityList.forEach(item -> {
             DocumentInfoDTO documentInfoDTO = DocumentInfoDTO.builder()
-                    .id(item.getId())
-                    .name(item.getName())
-                    .format(item.getExtension())
-                    .downloadAt(item.getLoadAt())
-                    .size(item.getSize())
+                    .id(item.getDocument_id().getId())
+                    .name(item.getDocument_id().getName())
+                    .format(item.getDocument_id().getExtension())
+                    .downloadAt(item.getDocument_id().getLoadAt())
+                    .size(item.getDocument_id().getSize())
                     .access("user")
                     .accessType(FileProcessor.accessName("user"))
                     .build();

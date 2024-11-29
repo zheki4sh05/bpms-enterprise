@@ -45,6 +45,12 @@ public class ViewUserAsWorker {
         this.lastname = lastname;
         this.email = email;
     }
+
+    public ViewUserAsWorker(String firstname, String lastname, String s) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+    }
 }
 //package com.example.bpmsenterprise.components.userData.entity.interfaces;
 //

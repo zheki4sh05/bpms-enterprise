@@ -143,7 +143,7 @@ public class AssignmentController {
         try {
             AssignmentDTO newStatus = assigmentControl.changeStatus(changeAssignmentStatusDTO);
             return ResponseEntity.ok(newStatus);
-        } catch (DataIntegrityViolationException e) { // если у пользователя уже есть компания
+        } catch (DataIntegrityViolationException e) {
             return ResponseEntity.badRequest().header("error", "419").body("already has company");
         }
 

@@ -22,10 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class TestingConfiguration {
 
 
-    @Bean
-    public UserRepository userRepository() {
-        return Mockito.mock(UserRepository.class);
-    }
+//    @Bean
+//    public UserRepository userRepository() {
+//        return Mockito.mock(UserRepository.class);
+//    }
 
     //    @Bean
 //    @Primary
@@ -35,31 +35,31 @@ public class TestingConfiguration {
 //                                        CompanyRepo companyRepo) {
 //        return new CompanyService(userData, userRoleInCompanyRepo, companyRepo, userRepository());
 //    }
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return Mockito.mock(PasswordEncoder.class);
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return Mockito.mock(PasswordEncoder.class);
+//    }
 
-    @Bean
-    public JwtService jwtService() {
-        return new JwtService();
-    }
+//    @Bean
+//    public JwtService jwtService() {
+//        return new JwtService();
+//    }
 
-    @Bean
-    @Primary
-    public AuthenticationManager authenticationManager() {
-        return Mockito.mock(AuthenticationManager.class);
-    }
+//    @Bean
+//    @Primary
+//    public AuthenticationManager authenticationManager() {
+//        return Mockito.mock(AuthenticationManager.class);
+//    }
 
-    @Bean
-    public TokenRepository tokenRepository() {
-        return Mockito.mock(TokenRepository.class);
-    }
-
-    @Bean
-    public CustomSecurityExpression customSecurityExpression(JwtService jwtService) {
-        return new CustomSecurityExpression(jwtService);
-    }
-
+//    @Bean
+//    public TokenRepository tokenRepository() {
+//        return Mockito.mock(TokenRepository.class);
+//    }
+//
+//    @Bean
+//    public CustomSecurityExpression customSecurityExpression(JwtService jwtService) {
+//        return new CustomSecurityExpression(jwtService);
+//    }
+//
 
 }

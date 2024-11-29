@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
 @Import(TestingConfiguration.class)
 @ExtendWith(MockitoExtension.class)
 class CompanyServiceTest {

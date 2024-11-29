@@ -33,4 +33,9 @@ public class Company {
     @JoinColumn(name = "send_to")
     private User sendTo;
 
+    public Company(Integer id, String name, String desc) {
+        this.id = id;
+        this.name = name;
+        this.desc = desc;
+    }
 }

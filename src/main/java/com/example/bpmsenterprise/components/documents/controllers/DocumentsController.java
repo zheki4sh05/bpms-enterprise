@@ -8,7 +8,7 @@ import com.example.bpmsenterprise.components.documents.facade.*;
 import com.example.bpmsenterprise.components.documents.interfaces.IDocumentsControl;
 import com.example.bpmsenterprise.components.documents.props.CreateDocRequest;
 import com.example.bpmsenterprise.components.userData.entity.Company;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,16 +28,18 @@ public class DocumentsController {
     @CrossOrigin
     @PostMapping("/upload")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
+    @SneakyThrows
     public ResponseEntity<?> uploadDocument(@RequestHeader Map<String, String> headers,
                                             @ModelAttribute CreateDocRequest createDocRequest) {
 
-        try {
-            System.out.println(createDocRequest);
-            List<DocumentInfoDTO> documentInfoDTOs = documentsControl.upload(createDocRequest);
-            return ResponseEntity.ok(documentInfoDTOs);
-        } catch (DataIntegrityViolationException | DocumentUploadException e) {
-            return ResponseEntity.badRequest().header("error", "419").body(e.getMessage());
-        }
+//        try {
+        System.out.println(createDocRequest);
+
+        List<DocumentInfoDTO> documentInfoDTOs = documentsControl.upload(createDocRequest);
+        return ResponseEntity.ok(documentInfoDTOs);
+//        } catch (DataIntegrityViolationException | DocumentUploadException e) {
+//            return ResponseEntity.badRequest().header("error", "419").body(e.getMessage());
+//        }
 
     }
 
