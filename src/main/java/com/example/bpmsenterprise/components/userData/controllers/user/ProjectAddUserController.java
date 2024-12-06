@@ -2,6 +2,7 @@ package com.example.bpmsenterprise.components.userData.controllers.user;
 
 import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.ProjectAddUserEntity;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectHRControl;
+import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "Project add controller")
 @RestController
 @RequestMapping("/api/v1/project/")
 @RequiredArgsConstructor

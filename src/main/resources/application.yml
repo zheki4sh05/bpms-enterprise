@@ -19,8 +19,8 @@ spring:
             max-file-size: -1
             max-request-size: -1
 minio:
+    url: http://192.168.0.5:9000
+    access-key: minioadmin
+    secret-key: minioadmin
     bucket: documents
-        url: http://192.168.0.5:9000
-        accessKey: minioadmin
-        secretKey: minioadmin
 

@@ -4,6 +4,7 @@ import com.example.bpmsenterprise.components.userData.DTO.UserCompany;
 import com.example.bpmsenterprise.components.userData.entity.Company;
 import com.example.bpmsenterprise.components.userData.entity.User_role_in_company;
 import com.example.bpmsenterprise.components.userData.interfaces.ICompanyControl;
+import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "Company controller")
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/company")

@@ -1,9 +1,12 @@
 package com.example.bpmsenterprise.components.authentication.controllers.Auth;
 
 import com.example.bpmsenterprise.components.authentication.services.AuthenticationService;
+import io.swagger.v3.oas.annotations.tags.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "auth controller")
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -13,7 +16,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request){
+            @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(service.register(request));
     }
 

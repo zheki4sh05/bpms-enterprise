@@ -4,6 +4,7 @@ import com.example.bpmsenterprise.components.userData.DTO.ChangeSpecDTO;
 import com.example.bpmsenterprise.components.userData.DTO.SpecDTO;
 import com.example.bpmsenterprise.components.userData.entity.Company;
 import com.example.bpmsenterprise.components.userData.interfaces.ISpecControl;
+import io.swagger.v3.oas.annotations.tags.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Company specializations controller")
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/company/specialization")

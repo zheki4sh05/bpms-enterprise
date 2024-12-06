@@ -8,6 +8,7 @@ import com.example.bpmsenterprise.components.documents.facade.*;
 import com.example.bpmsenterprise.components.documents.interfaces.IDocumentsControl;
 import com.example.bpmsenterprise.components.documents.props.CreateDocRequest;
 import com.example.bpmsenterprise.components.userData.entity.Company;
+import io.swagger.v3.oas.annotations.tags.*;
 import lombok.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "doc controller")
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/documents")

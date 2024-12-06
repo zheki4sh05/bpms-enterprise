@@ -7,6 +7,7 @@ import com.example.bpmsenterprise.components.userData.entity.Project;
 import com.example.bpmsenterprise.components.userData.entity.views.ViewProject;
 import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker;
 import com.example.bpmsenterprise.components.userData.interfaces.IProjectControl;
+import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Project controller")
 @RestController
 @RequestMapping("/api/v1/project")
 @RequiredArgsConstructor
 public class ProjectController {
     private final IProjectControl projectControl;
+
     @PostMapping("/create")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> createProject(@RequestHeader Map<String, String> headers,
@@ -35,6 +38,7 @@ public class ProjectController {
             return ResponseEntity.badRequest().header("error", "404").body(e.getMessage());
         }
     }
+
     @DeleteMapping("/delete")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<String> deleteProject(@RequestHeader Map<String, String> headers,
@@ -46,6 +50,7 @@ public class ProjectController {
             return ResponseEntity.badRequest().header("error", "403").body(e.getMessage());
         }
     }
+
     @PutMapping ("/update")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<String> updateProject(@RequestHeader Map<String, String> headers,
@@ -57,6 +62,7 @@ public class ProjectController {
             return ResponseEntity.badRequest().header("error", "404").body("doesn't have a project");
         }
     }
+
     @GetMapping("/fetch")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")
     public ResponseEntity<?> getUserProjects(@RequestHeader Map<String, String> headers,
@@ -70,6 +76,7 @@ public class ProjectController {
         }
 
     }
+
     @CrossOrigin
     @GetMapping("/workers")
     @PreAuthorize(value = "@cse.canAccessUser(#headers)")

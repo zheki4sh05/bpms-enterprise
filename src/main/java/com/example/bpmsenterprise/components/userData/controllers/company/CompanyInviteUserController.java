@@ -7,6 +7,7 @@ import com.example.bpmsenterprise.components.userData.controllers.user.requestEn
 import com.example.bpmsenterprise.components.userData.controllers.user.requestEntity.UserInviteResponseEntity;
 import com.example.bpmsenterprise.components.userData.exceptions.UserWorksInCompanyException;
 import com.example.bpmsenterprise.components.userData.interfaces.ICompanyHRControl;
+import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "Company invite user controller")
 @RestController
 @RequestMapping("/api/v1/company/")
 @RequiredArgsConstructor

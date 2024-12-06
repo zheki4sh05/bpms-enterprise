@@ -4,6 +4,7 @@ import com.example.bpmsenterprise.components.userData.DTO.UserCompany;
 import com.example.bpmsenterprise.components.userData.entity.views.ViewUserAsWorker;
 import com.example.bpmsenterprise.components.userData.interfaces.ICompanyControl;
 import com.example.bpmsenterprise.components.userData.interfaces.IUserActivityControl;
+import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Workers controller")
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/workers")

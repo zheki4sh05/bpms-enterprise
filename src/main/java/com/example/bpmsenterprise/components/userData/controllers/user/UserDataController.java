@@ -4,6 +4,7 @@ import com.example.bpmsenterprise.components.userData.DTO.NotificationDTO;
 import com.example.bpmsenterprise.components.userData.DTO.UserDTO;
 import com.example.bpmsenterprise.components.userData.exceptions.SuchEmailIsExistException;
 import com.example.bpmsenterprise.components.userData.interfaces.IUserDataControl;
+import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "User data controller")
 @CrossOrigin
 @RestController
 @RequestMapping("/api/v1/user")
